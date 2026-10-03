@@ -1,0 +1,15 @@
+data/
+data_smoke/
+out_smoke/
+outputs*/checkpoints/
+wandb/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+*.zip
+fs2k_check.png
+.env
+# large model files are distributed via GitHub Releases (see README)
+models/*.onnx
+GenAI_Assignment1.pdf

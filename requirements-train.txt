@@ -1,0 +1,14 @@
+torch>=2.3
+torchvision>=0.18
+numpy
+opencv-python-headless
+pillow
+pandas
+matplotlib
+scikit-learn
+optuna>=3.6
+wandb
+onnx
+onnxscript
+onnxruntime
+gdown
