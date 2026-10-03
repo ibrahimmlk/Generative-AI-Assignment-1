@@ -90,4 +90,4 @@ python scripts/run_restoration.py --budget smoke --data data --out out_smoke   #
 ## 4. Experiment tracking
 
 All Optuna trials, final runs, losses, validation metrics, sample images, checkpoints (artifacts) and test results are
-logged to Weights & Biases project `genai-a1` (link in the report).
+logged to Weights & Biases: https://wandb.ai/m-ibrahim-malik-national-university-of-computer-and-eme/genai-a1
