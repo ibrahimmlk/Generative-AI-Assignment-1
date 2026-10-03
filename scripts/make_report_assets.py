@@ -93,6 +93,7 @@ def main():
             M[f"{name}SSIMCORR"] = fmt(corr[f"ssim_{key}"], 3)
 
     ver = load(os.path.join(o, "onnx", "onnx_verification.json"), []) + load(os.path.join(s, "onnx", "onnx_verification.json"), [])
+    ver = list({v["file"]: v for v in ver}.values())
     M["ONNXMAXDIFF"] = f"{max(v['max_abs_diff'] for v in ver):.1e}" if ver else "?"
 
     with open(os.path.join(REPORT, "onnx_table.tex"), "w") as f:
