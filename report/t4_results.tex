@@ -1,0 +1,46 @@
+\textbf{Training dynamics} (Fig.~\ref{fig:gancurves}). After a short transient in the first epochs, the discriminator real and fake losses settle at $\approx$0.53 and $\approx$0.51 and the generator adversarial loss decreases slowly from 1.2 to 1.05: neither network overpowers the other and there is no sign of mode collapse. The Optuna history (Fig.~\ref{fig:optuna}) shows that the reconstruction weight was the decisive hyper-parameter: all seven pruned trials used $\lambda_{L1}\le72$, all five completed ones $\lambda_{L1}\ge78$, independent of the learning rates. Part of this preference is built into the selection criterion, which is pixel-based (SSIM/PSNR) and therefore rewards a strong L1 term; a perceptual criterion might favour a smaller $\lambda_{L1}$. Among the completed trials the fANOVA importance attributes most of the variance to lr$_G$ (0.43), dropout (0.26) and lr$_D$ (0.23) and almost none to $\lambda_{L1}$ (0.06); this does not contradict the previous observation, because importance is computed on completed trials only, which all had a large $\lambda_{L1}$. The selected configuration uses $\lambda_{L1}=111$ (close to the pix2pix default of 100), lr$_G=4.0\cdot10^{-4}$ with a $9\times$ smaller lr$_D=4.5\cdot10^{-5}$, a large decoder dropout (0.47) and the largest embedding ($d=16$). The training L1 keeps decreasing until epoch 200 while the validation L1 flattens after $\approx$120 epochs, indicating mild over-fitting; the best validation objective was reached at epoch 168, whose weights are used.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{t4_curves.png}
+\caption{Task 4 training: discriminator real/fake loss and generator adversarial loss (left), generator L1 on training and validation data (middle), validation SSIM (right).}
+\label{fig:gancurves}
+\end{figure}
+
+\textbf{Test results.} On the 1{,}046 official FS2K test pairs the generator reaches SSIM 0.480, PSNR 15.4\,dB and L1 0.107 (images in $[0,1]$). Results differ strongly by style: style~3 (light pencil) 0.625 / 18.5\,dB, style~1 (clean line drawing) 0.522 / 17.1\,dB and style~2 (dense charcoal shading) 0.393 / 12.3\,dB. Pixel metrics are a harsh measure for sketches: a stroke drawn two pixels away from the artist's stroke is penalised twice, although perceptually it is equally valid, so these numbers should be read as relative rather than absolute quality indicators.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.85\columnwidth]{t4_style_swap.png}
+\caption{Style control: the same test photograph rendered with each of the three style embeddings (``GT style'' marks the style of the artist's sketch).}
+\label{fig:styleswap}
+\end{figure}
+
+\textbf{Style conditioning works.} Fig.~\ref{fig:styleswap} renders the same test photograph with all three style embeddings. The outputs differ in exactly the way the FS2K styles differ: style 1 produces sparse contour lines, style 2 heavy dark hatching in hair and shadows, style 3 soft grey pencil shading with a light background. Since the photograph is identical in each row, these differences can only come from the embedding, which confirms that the condition is used by the generator and not ignored. Fig.~\ref{fig:t4ex} shows random test examples; identity, pose, glasses and hats are preserved, and facial features are aligned with the ground truth.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.78\columnwidth]{t4_test_examples.png}
+\caption{FS2K test examples (two per style): photograph, generated sketch, artist's sketch.}
+\label{fig:t4ex}
+\end{figure}
+
+\textbf{Failure cases} (Fig.~\ref{fig:t4fail}). All four lowest-SSIM test cases are style~2 portraits with long hair. The artist draws hair as a dense mass of long, high-contrast strokes, whereas the generator produces fewer, lighter and shorter strokes: under the L1 term, the safest prediction for a stroke whose exact position is uncertain is a light grey average, which the adversarial term only partly counteracts. Style~2 is also the hardest style overall, and the test set is imbalanced (619/381/46 images for styles 1/2/3), so the overall average is dominated by the two harder styles. A second, smaller failure mode is visible in Fig.~\ref{fig:t4ex}: lips and nostrils are sometimes rendered with doubled or fragmented contours (``ghost'' strokes) where the photograph has strong colour edges but the artist drew a single line.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.78\columnwidth]{t4_failures.png}
+\caption{Task 4 failure cases (lowest test SSIM): dense style-2 hair is under-drawn.}
+\label{fig:t4fail}
+\end{figure}
+
+\textbf{Progress over training.} The fixed validation grid logged every 10 epochs (W\&B and Fig.~\ref{fig:progress}) shows that after the first epoch the outputs are blurry, but their tone already depends on the style (style~2 is darker); by epoch 10 stroke-like textures appear, still with speckle noise; by epoch 30 contours are clean and the three styles are clearly distinct; later epochs mostly sharpen strokes and remove background speckle.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.32\columnwidth]{t4_progress_epoch_001.png}\hfill
+\includegraphics[width=0.32\columnwidth]{t4_progress_epoch_030.png}\hfill
+\includegraphics[width=0.32\columnwidth]{t4_progress_epoch_200.png}
+\caption{The same validation photographs (rows) in styles 1--3 after epoch 1, 30 and 200.}
+\label{fig:progress}
+\end{figure}

@@ -1,0 +1,41 @@
+\textbf{Classifier.} On the validation manifest the classifier reaches 99.73\,\% accuracy and 0.997 macro-F1; on the full test set (36{,}690 inputs) it reaches \textbf{99.87\,\%} accuracy, macro precision 0.998, macro recall 0.998 and macro-F1 \textbf{0.998} (Table~\ref{tab:cls}, Fig.~\ref{fig:cm}). Salt-and-pepper is recognised perfectly; all errors involve the clean class: 0.4\,\% of clean images are predicted as blur and 0.2\,\% as occlusion, and 0.2\,\% of occluded images are predicted as clean. Accuracy is 100\,\% at medium and high severity and 99.8\,\% at low severity, i.e.\ errors only occur where the corruption is weakest.
+
+\begin{table}[t]
+\centering
+\caption{Classifier test metrics (36,690 test inputs)}
+\label{tab:cls}
+\begin{tabular}{lccc}
+\toprule
+Class & Precision & Recall & F1 \\
+\midrule
+Clean & 0.993 & 0.994 & 0.994 \\
+Salt \& pepper & 1.000 & 1.000 & 1.000 \\
+Gaussian blur & 0.999 & 1.000 & 0.999 \\
+Occlusion & 0.999 & 0.998 & 0.999 \\
+\midrule
+Macro avg. & 0.998 & 0.998 & 0.998 \\
+Accuracy & \multicolumn{3}{c}{0.9987} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\columnwidth]{t2_confusion_val.png}\hfill
+\includegraphics[width=0.49\columnwidth]{t2_confusion_test.png}
+\caption{Normalised four-class confusion matrices of the corruption classifier on the validation (left) and test (right) manifests.}
+\label{fig:cm}
+\end{figure}
+
+\textbf{Oracle vs.\ predicted routing.} Because the classifier is almost perfect, predicted routing is practically identical to oracle routing: 26.12 vs.\ 26.11\,dB and 0.808 vs.\ 0.808 SSIM over all corrupted inputs (Tables~\ref{tab:psnr_type}--\ref{tab:ssim_sev}). Only 46 of 36{,}690 inputs (0.13\,\%) were misrouted. Interestingly, predicted routing is marginally \emph{better} than oracle routing on low-severity occlusion (24.81 vs.\ 24.79\,dB): in the 25 occlusion$\to$clean errors the black mask lies on an already black region, so the occlusion is effectively invisible and the identity bypass returns a nearly perfect image, whereas the occlusion specialist would have in-painted a wrong colour.
+
+\textbf{Misrouting failures} (Fig.~\ref{fig:misroute}). The harmful errors are the 21 clean images sent to an expert, which lose 13.6\,dB on average. They have a clear common cause: letter-boxed or framed photographs with \emph{black bars at the borders}. The classifier interprets the black bars as occluders and routes the image to the occlusion specialist, which then ``repairs'' the bars by painting them with background colour (11.6--12.8\,dB). The remaining clean$\to$blur errors are soft, low-contrast photographs that genuinely look slightly blurred. This shows that the occlusion definition (pure black rectangles) is ambiguous with naturally occurring black regions, and that a hard decision converts a small classification error into a large restoration error.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{t2_misrouted.png}
+\caption{Predicted-routing failures with the largest PSNR loss: clean images with black borders are routed to the occlusion expert, which paints over the borders.}
+\label{fig:misroute}
+\end{figure}
+
+\textbf{Specialists vs.\ universal model.} The comparison with Task 1 is instructive. With an identity bypass, clean images are returned unchanged (100\,dB / SSIM 1.0 under oracle routing; 99.6\,dB / 0.999 predicted) instead of being smoothed to 28.4\,dB, which is the single largest advantage of routing. On corrupted inputs, however, the specialists are \emph{not} clearly better than the universal DAE: they win on occlusion PSNR (22.80 vs.\ 22.37\,dB) and high blur (26.00 vs.\ 25.59\,dB) but lose slightly on salt-and-pepper (28.15 vs.\ 28.23\,dB) and on SSIM for every corruption (0.808 vs.\ 0.817 on average). Two factors explain this. First, both systems hit the same $\approx$28\,dB ceiling imposed by the bottleneck, so specialisation cannot help where the bottleneck, not the task diversity, is the limit. Second, the shared specialist search preferred a smaller encoder ($b=48$) and a larger L1 weight ($\alpha=0.77$ vs.\ 0.56), which trades SSIM for PSNR. In other words, the universal network had enough capacity to learn all three corruptions jointly at this resolution.

@@ -1,0 +1,24 @@
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.49\textwidth]{t1_curves.png}\hfill
+\includegraphics[width=0.49\textwidth]{t2_cls_curves.png}\[1mm]
+\includegraphics[width=0.49\textwidth]{t2_spec_salt_pepper_curves.png}\hfill
+\includegraphics[width=0.49\textwidth]{t2_spec_occlusion_curves.png}\[1mm]
+\includegraphics[width=0.98\textwidth]{t3_moe_curves.png}
+\caption{Training and validation curves of the final runs: Task 1 universal DAE, Task 2 classifier, two of the Task 2 specialists (the blur specialist behaves alike), and Task 3 soft MoE (epochs 1--\MOEWARM: warm-up with frozen experts; afterwards joint fine-tuning; mean routing weights on the validation set in the last panel).}
+\label{fig:curves}
+\end{figure*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.24\textwidth]{optuna_t1_universal_ae_history.png}\hfill
+\includegraphics[width=0.24\textwidth]{optuna_t2_classifier_history.png}\hfill
+\includegraphics[width=0.24\textwidth]{optuna_t2_specialists_history.png}\hfill
+\includegraphics[width=0.24\textwidth]{optuna_t3_soft_moe_v2_history.png}\[1mm]
+\includegraphics[width=0.24\textwidth]{optuna_t4_sketch_gan_history.png}\hfill
+\includegraphics[width=0.24\textwidth]{optuna_t1_universal_ae_importance.png}\hfill
+\includegraphics[width=0.24\textwidth]{optuna_t3_soft_moe_v2_importance.png}\hfill
+\includegraphics[width=0.24\textwidth]{optuna_t4_sketch_gan_importance.png}
+\caption{Optuna studies. Top: optimisation histories of the Task 1 DAE, Task 2 classifier, Task 2 shared specialist search and Task 3 soft MoE. Bottom: Task 4 GAN history and fANOVA hyper-parameter importances for Tasks 1, 3 and 4 (importances use completed trials only).}
+\label{fig:optuna}
+\end{figure*}
