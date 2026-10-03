@@ -13,6 +13,14 @@ FILES = ["universal_ae.onnx", "classifier.onnx", "specialist_salt_pepper.onnx", 
 DEST = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "models")
 
 
+def _progress(name):
+    def hook(blocks, block_size, total):
+        done = blocks * block_size
+        pct = f"{100 * done / total:5.1f}%" if total > 0 else ""
+        print(f"\r[get ] {name}: {done / 2**20:6.1f} MB {pct}", end="", flush=True)
+    return hook
+
+
 def main():
     os.makedirs(DEST, exist_ok=True)
     for f in FILES:
@@ -20,11 +28,10 @@ def main():
         if os.path.exists(path) and os.path.getsize(path) > 0:
             print(f"[skip] {f} already present")
             continue
-        print(f"[get ] {f} ...", end=" ", flush=True)
         try:
-            urllib.request.urlretrieve(f"{RELEASE}/{f}", path + ".part")
+            urllib.request.urlretrieve(f"{RELEASE}/{f}", path + ".part", reporthook=_progress(f))
             os.replace(path + ".part", path)
-            print(f"{os.path.getsize(path) / 2**20:.1f} MB")
+            print(f"\r[ ok ] {f}: {os.path.getsize(path) / 2**20:.1f} MB" + " " * 20)
         except Exception as e:
             print("FAILED:", e)
             sys.exit(1)
