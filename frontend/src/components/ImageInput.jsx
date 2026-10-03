@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { getSamples, sampleUrl } from "../api";
+import { Icon } from "./ui";
 
 // Upload / drag-and-drop / sample picker / optional webcam capture.
 // onChange receives { file } or { sample } plus a preview URL.
@@ -61,13 +62,13 @@ export default function ImageInput({ kind = "pets", value, onChange, webcam = fa
   return (
     <div className="space-y-3">
       {camOn ? (
-        <div className="overflow-hidden rounded-xl border border-indigo-500/40">
+        <div className="overflow-hidden rounded-xl ring-1 ring-primary/40">
           <video ref={videoRef} autoPlay playsInline className="aspect-video w-full bg-black object-cover" />
           <div className="flex gap-2 p-2">
-            <button onClick={capture} className="flex-1 rounded-lg bg-indigo-500 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-400">
+            <button onClick={capture} className="flex-1 rounded-lg bg-primary-container px-3 py-2 text-sm font-medium text-on-primary-container hover:opacity-90">
               Capture photo
             </button>
-            <button onClick={stopCam} className="rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800">
+            <button onClick={stopCam} className="rounded-lg border border-outline-variant px-3 py-2 text-sm text-on-surface-variant hover:bg-surface-container-high">
               Cancel
             </button>
           </div>
@@ -85,19 +86,21 @@ export default function ImageInput({ kind = "pets", value, onChange, webcam = fa
             setDrag(false);
             pickFile(e.dataTransfer.files?.[0]);
           }}
-          className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 border-dashed p-3 transition ${
-            drag ? "border-indigo-400 bg-indigo-500/10" : "border-slate-700 hover:border-slate-500"
+          className={`group flex cursor-pointer flex-col items-center justify-center rounded-xl p-5 text-center transition-all ${
+            drag ? "bg-primary-container/20 ring-2 ring-primary" : "bg-surface-container-lowest/60 hover:bg-surface-container-lowest"
           }`}
         >
           {value?.preview ? (
-            <img src={value.preview} alt="selected" className="h-16 w-16 rounded-lg object-cover" />
+            <img src={value.preview} alt="selected" className="mb-2 h-20 w-20 rounded-lg object-cover shadow-md" />
           ) : (
-            <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-slate-800 text-2xl text-slate-500">⇪</div>
+            <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-surface-container text-primary shadow-sm transition-transform group-hover:scale-110">
+              <Icon name="cloud_upload" className="text-2xl" />
+            </div>
           )}
-          <div className="min-w-0 text-sm">
-            <div className="font-medium text-slate-200">{value ? "Change image" : "Upload an image"}</div>
-            <div className="truncate text-xs text-slate-500">{value?.label || "Click or drop PNG / JPEG / WEBP (max 10 MB)"}</div>
-          </div>
+          <span className="text-sm font-medium text-on-surface">{value ? "Change image" : "Drag & drop image here or browse files"}</span>
+          <span className="mt-1 max-w-full truncate font-mono text-[11px] font-semibold uppercase tracking-wider text-outline">
+            {value?.label || "PNG, JPG, WebP up to 10MB"}
+          </span>
           <input
             ref={inputRef}
             type="file"
@@ -108,21 +111,24 @@ export default function ImageInput({ kind = "pets", value, onChange, webcam = fa
         </div>
       )}
       {webcam && !camOn && (
-        <button onClick={startCam} className="w-full rounded-lg border border-slate-700 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800">
-          ◉ Use webcam
+        <button onClick={startCam} className="flex w-full items-center justify-center gap-2 rounded-lg bg-surface-container-high px-3 py-2 text-sm text-on-surface-variant hover:text-on-surface">
+          <Icon name="photo_camera" className="text-lg" /> Use webcam
         </button>
       )}
-      {camError && <p className="text-xs text-rose-300">{camError}</p>}
+      {camError && <p className="text-xs text-error">{camError}</p>}
       {samples.length > 0 && (
         <div>
-          <div className="mb-1.5 text-[11px] uppercase tracking-wide text-slate-500">Or pick a sample (unseen test images)</div>
+          <div className="mb-1.5 flex items-center justify-between">
+            <span className="font-mono text-[13px] font-medium text-on-surface-variant">Sample Test Harness</span>
+            <span className="font-mono text-[11px] font-semibold text-outline">{samples.length} UNSEEN</span>
+          </div>
           <div className="grid grid-cols-5 gap-1.5">
             {samples.map((s) => (
               <button
                 key={s}
                 onClick={() => onChange({ sample: s, preview: sampleUrl(s), label: s })}
-                className={`overflow-hidden rounded-lg border-2 transition ${
-                  value?.sample === s ? "border-indigo-400" : "border-transparent opacity-70 hover:opacity-100"
+                className={`overflow-hidden rounded-lg transition-transform hover:scale-105 ${
+                  value?.sample === s ? "shadow-md ring-2 ring-primary" : "opacity-70 hover:opacity-100"
                 }`}
               >
                 <img src={sampleUrl(s)} alt={s} className="aspect-square w-full object-cover" />

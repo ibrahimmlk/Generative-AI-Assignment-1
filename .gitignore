@@ -13,3 +13,4 @@ fs2k_check.png
 # large model files are distributed via GitHub Releases (see README)
 models/*.onnx
 GenAI_Assignment1.pdf
+shot_*.png

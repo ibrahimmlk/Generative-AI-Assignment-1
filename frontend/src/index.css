@@ -1,12 +1,47 @@
 @import "tailwindcss";
 
+/* Design tokens taken from the Google Stitch export (design/stitch/*.html) */
 @theme {
+  --color-surface: #0c1324;
+  --color-surface-container-lowest: #070d1f;
+  --color-surface-container-low: #151b2d;
+  --color-surface-container: #191f31;
+  --color-surface-container-high: #23293c;
+  --color-surface-container-highest: #2e3447;
+  --color-on-surface: #dce1fb;
+  --color-on-surface-variant: #c7c4d7;
+  --color-outline: #908fa0;
+  --color-outline-variant: #464554;
+  --color-primary: #c0c1ff;
+  --color-primary-fixed: #e1e0ff;
+  --color-primary-container: #8083ff;
+  --color-on-primary-container: #0d0096;
+  --color-secondary: #d0bcff;
+  --color-secondary-container: #571bc1;
+  --color-inverse-primary: #494bd6;
+  --color-tertiary: #4cd7f6;
+  --color-tertiary-container: #009eb9;
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Geist", "Inter", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
 }
 
 body {
-  @apply bg-slate-950 text-slate-200 antialiased;
+  @apply bg-surface text-on-surface antialiased;
 }
 .pixelated {
   image-rendering: pixelated;
+}
+.material-symbols-outlined {
+  font-variation-settings: "FILL" 0, "wght" 400;
+  line-height: 1;
+}
+.btn-primary {
+  @apply flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary-container via-secondary-container to-inverse-primary px-4 py-3 font-display text-base font-semibold text-white shadow-[0_0_24px_rgba(128,131,255,0.35)] transition hover:opacity-95 active:scale-[0.99] disabled:opacity-60;
+}
+.pill {
+  @apply rounded-full px-2 py-0.5 font-mono text-[11px] font-semibold uppercase tracking-wider;
 }

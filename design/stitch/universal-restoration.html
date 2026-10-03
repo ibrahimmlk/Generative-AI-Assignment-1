@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"on-primary":"#1000a9","surface":"#0c1324","primary-fixed-dim":"#c0c1ff","secondary-container":"#571bc1","on-primary-container":"#0d0096","background":"#0c1324","primary-container":"#8083ff","tertiary-container":"#009eb9","on-secondary":"#3c0091","on-tertiary":"#003640","on-tertiary-container":"#002f38","surface-bright":"#33394c","secondary-fixed-dim":"#d0bcff","primary-fixed":"#e1e0ff","on-primary-fixed-variant":"#2f2ebe","on-error-container":"#ffdad6","secondary":"#d0bcff","on-secondary-fixed":"#23005c","surface-container-lowest":"#070d1f","tertiary-fixed-dim":"#4cd7f6","on-tertiary-fixed-variant":"#004e5c","secondary-fixed":"#e9ddff","on-background":"#dce1fb","surface-container-high":"#23293c","inverse-on-surface":"#2a3043","on-surface-variant":"#c7c4d7","on-secondary-container":"#c4abff","outline-variant":"#464554","inverse-surface":"#dce1fb","surface-tint":"#c0c1ff","on-surface":"#dce1fb","tertiary":"#4cd7f6","on-tertiary-fixed":"#001f26","inverse-primary":"#494bd6","surface-variant":"#2e3447","primary":"#c0c1ff","on-error":"#690005","surface-container-highest":"#2e3447","on-secondary-fixed-variant":"#5516be","surface-dim":"#0c1324","on-primary-fixed":"#07006c","tertiary-fixed":"#acedff","surface-container-low":"#151b2d","error-container":"#93000a","outline":"#908fa0","error":"#ffb4ab","surface-container":"#191f31"},borderRadius:{DEFAULT:"0.25rem",lg:"0.5rem",xl:"0.75rem",full:"9999px"},spacing:{"margin-desktop":"2rem",margin:"1rem","margin-tablet":"1.5rem","space-2xl":"3rem","space-md":"1rem","space-xl":"2rem","space-sm":"0.5rem",gutter:"1rem","space-xs":"0.25rem","space-lg":"1.5rem","gutter-desktop":"1.5rem"},fontFamily:{"body-lg":["Inter"],"display-lg":["Geist"],"body-md":["Inter"],"headline-lg":["Geist"],"pill-tag":["JetBrains Mono"],"display-lg-mobile":["Geist"],"headline-sm":["Geist"],"stat-metric":["JetBrains Mono"],"label-code":["JetBrains Mono"],"headline-md":["Geist"],"headline-lg-mobile":["Geist"],"body-sm":["Inter"]},fontSize:{"body-lg":["16px",{lineHeight:"24px",letterSpacing:"-0.005em",fontWeight:"400"}],"display-lg":["48px",{lineHeight:"56px",letterSpacing:"-0.03em",fontWeight:"600"}],"body-md":["14px",{lineHeight:"20px",letterSpacing:"0em",fontWeight:"400"}],"headline-lg":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"600"}],"pill-tag":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"600"}],"display-lg-mobile":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"600"}],"headline-sm":["18px",{lineHeight:"26px",letterSpacing:"-0.01em",fontWeight:"500"}],"stat-metric":["28px",{lineHeight:"32px",letterSpacing:"-0.02em",fontWeight:"600"}],"label-code":["13px",{lineHeight:"18px",letterSpacing:"-0.01em",fontWeight:"500"}],"headline-md":["24px",{lineHeight:"32px",letterSpacing:"-0.015em",fontWeight:"500"}],"headline-lg-mobile":["24px",{lineHeight:"32px",letterSpacing:"-0.01em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",letterSpacing:"0.005em",fontWeight:"400"}]}}}}</script></head><body class="bg-surface font-body-md text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-container-low/95 backdrop-blur-2xl z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="p-space-lg flex items-center gap-space-md"><img alt="GenAI Restoration Lab Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1UQlXpatM1HzBiioOh0utMFNarvOtwErQTC0CvtyP2StzA4ap4-nNPVv0qH0tN14fXY8XucB46rSIWqk452xAJxOL-nc8l1vBA5ecZkoOxrCJk7EhLDttR2Laf0WnAe3nY0BFDyUglvJZ2_rEVGAuwVxBtrqACqcPlUodnj_s6QrX5fr8bDhA-RLevrhDj4iNsg3kdNgtiomPLeGE-xb_v4UuowSjq6djtRkcFl0mgifXO7HjAs5lX_BDs"/><div class="flex flex-col min-w-0"><span class="font-headline-sm text-headline-sm text-on-surface tracking-tight truncate">GenAI Restoration Lab</span><span class="font-body-sm text-body-sm text-on-surface-variant truncate">Computer Vision &amp; Diffusion ResLab</span></div></div><div class="px-space-lg py-space-xs"><div class="font-pill-tag text-pill-tag uppercase text-outline tracking-wider">Neural Architectures</div></div><nav class="flex flex-col gap-space-xs px-space-md mt-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-headline-sm font-semibold rounded-lg shadow-[0_0_16px_-2px_rgba(99,102,241,0.2)]"><a aria-current="page" class="flex items-center gap-space-md px-space-md py-space-sm transition-all bg-primary-container text-on-primary-container font-headline-sm font-semibold rounded-lg shadow-[0_0_16px_-2px_rgba(99,102,241,0.2)]" data-path="universal-restoration" href="#"><span class="material-symbols-outlined text-xl">auto_awesome</span><span class="truncate">Universal Restoration</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="hard-routed-restoration" href="#"><span class="material-symbols-outlined text-xl">alt_route</span><span class="truncate">Hard-Routed Restoration</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="soft-mixture-of-experts" href="#"><span class="material-symbols-outlined text-xl">memory</span><span class="truncate">Soft Mixture-of-Experts</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-lg font-body-md text-body-md text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="face-to-sketch-generator" href="#"><span class="material-symbols-outlined text-xl">draw</span><span class="truncate">Face-to-Sketch Generator</span></a></nav></div><div class="p-space-md flex flex-col gap-space-sm bg-surface-container-lowest/70 backdrop-blur-xl"><div class="flex items-center justify-between px-space-xs"><div class="flex items-center gap-space-xs"><span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span></span><span class="font-label-code text-label-code text-on-surface">System Online</span></div><span class="font-label-code text-label-code text-outline">12ms</span></div><div class="flex items-center justify-between gap-space-xs"><span class="px-space-sm py-space-xs rounded-full font-pill-tag text-pill-tag bg-surface-container-highest text-tertiary-fixed-dim uppercase tracking-wider">ONNX v1.17.1 (CUDA)</span><span class="font-pill-tag text-pill-tag text-on-surface-variant font-medium">Models: 4/4</span></div><div class="w-full bg-surface-container-highest h-1 rounded-full overflow-hidden"><div class="bg-tertiary h-full rounded-full w-full shadow-[0_0_8px_rgba(76,215,246,0.5)]"></div></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 z-40 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between"><div class="flex items-center gap-space-sm font-label-code text-label-code"><span class="text-on-surface-variant">Lab Core</span><span class="text-outline">/</span><span class="text-primary font-medium tracking-wide">Runtime Engine</span></div><div class="flex items-center gap-space-lg"><div class="hidden xl:flex items-center gap-space-sm px-space-md py-space-xs rounded-full bg-surface-container-low"><span class="material-symbols-outlined text-sm text-tertiary">developer_board</span><span class="font-label-code text-label-code text-on-surface-variant">NVIDIA A100-SXM4-80GB • FP16</span></div><div class="hidden md:flex items-center gap-space-sm px-space-md py-space-xs rounded-full bg-surface-container-low"><span class="material-symbols-outlined text-sm text-primary">database</span><div class="flex items-center gap-space-xs font-label-code text-label-code text-on-surface-variant"><span>VRAM:</span><span class="text-on-surface font-semibold">8.4</span><span class="text-outline">/</span><span>80 GB</span></div><div class="w-12 bg-surface-container-highest h-1.5 rounded-full overflow-hidden ml-space-xs"><div class="bg-primary h-full rounded-full w-[10.5%]"></div></div></div><div class="flex items-center gap-space-sm"><a class="flex items-center gap-space-xs px-space-sm py-space-xs rounded-lg font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#"><span class="material-symbols-outlined text-base">menu_book</span><span class="hidden sm:inline">Docs</span></a><button class="p-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors relative" type="button"><span class="material-symbols-outlined text-xl">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary ring-2 ring-surface"></span></button><div class="flex items-center gap-space-sm pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-1 ring-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwnNJ3PyFmmTM99RMDNYKkKKdY1zHDSprS5qq9JvRL35yGR1K8btoqltRy4sktnSLP07jDPydK-NwLKjsUgDgdlCq0sfVavDtMeP9dtVluWOgd1IaeHGQ1Vmtgm4g4la57NIrkiHG4vTit5Fsrz21CEr_FuAhvehhN3S3u4s1hvj7_xFb2bnh3uXMUJpDz8QxhtLlmRhfqS0f8eojUjOX70xeYmZ_gSSDC7U7cW1YlzSWkuZnVyQpfGA"/></div></div></div></div></header><main class="w-full pt-16 bg-surface"><div class="flex flex-col w-full">
+<div class="px-gutter-desktop py-space-lg flex flex-col gap-space-lg">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs font-label-code text-label-code text-tertiary mb-space-xs">
+<span class="inline-block w-2 h-2 rounded-full bg-tertiary animate-pulse"></span>
+<span>DISPATCH ENGINE // STAGE-01</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Universal Restoration</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mt-0.5">
+          Unified multi-degradation foundation model for zero-shot image enhancement, neural denoising, and latent super-resolution.
+        </p>
+</div>
+<!-- Quick Session Indicator -->
+<div class="flex items-center gap-space-md self-start md:self-auto bg-surface-container-low px-space-md py-space-sm rounded-xl shadow-sm">
+<div class="flex flex-col">
+<span class="font-pill-tag text-pill-tag uppercase text-outline">Weight Checkpoint</span>
+<span class="font-label-code text-label-code text-on-surface font-semibold">unirest-v2.4-hybrid-fp16</span>
+</div>
+<div class="w-px h-6 bg-surface-container-highest"></div>
+<div class="flex items-center gap-space-xs">
+<span class="font-pill-tag text-pill-tag px-space-sm py-0.5 rounded-full bg-surface-container-highest text-tertiary font-semibold tracking-wider uppercase">CUDA Active</span>
+</div>
+</div>
+</div>
+<!-- Main Workspace Split Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT CONTROL COLUMN (w-96 class via 4-col span on desktop) -->
+<div class="lg:col-span-4 xl:col-span-4 flex flex-col gap-space-md">
+<!-- Controls Panel Card -->
+<div class="bg-surface-container-low/90 backdrop-blur-xl rounded-xl p-space-lg flex flex-col gap-space-md shadow-md">
+<!-- Card Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-xl">tune</span>
+<h2 class="font-headline-sm text-headline-sm text-on-surface tracking-tight">Input &amp; Restoration Controls</h2>
+</div>
+<button class="p-space-xs rounded-lg text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high transition-colors" title="Reset Pipeline Parameters" type="button">
+<span class="material-symbols-outlined text-lg">restart_alt</span>
+</button>
+</div>
+<!-- Upload Dropzone Area -->
+<div class="group relative flex flex-col items-center justify-center p-space-lg rounded-xl bg-surface-container-lowest/60 hover:bg-surface-container-lowest transition-all cursor-pointer text-center">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform mb-space-sm shadow-sm">
+<span class="material-symbols-outlined text-2xl">cloud_upload</span>
+</div>
+<span class="font-body-md text-body-md font-medium text-on-surface">Drag &amp; drop image here or browse files</span>
+<span class="font-pill-tag text-pill-tag text-outline mt-1 uppercase tracking-wider">PNG, JPG, WebP up to 25MB</span>
+<input accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" type="file"/>
+</div>
+<!-- Sample Thumbnails Selection -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface-variant font-medium">Sample Test Harness</span>
+<span class="font-pill-tag text-pill-tag text-outline">4 CACHED</span>
+</div>
+<div class="grid grid-cols-4 gap-space-sm" id="sample-selector">
+<button class="relative aspect-square rounded-lg overflow-hidden shadow-md bg-surface-container-high focus:outline-none transition-transform hover:scale-105" data-sample="0" type="button">
+<img alt="Clean high resolution reference sample" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFQNPAe02ndMfJ4Lpkb4CgWCUUG7gq9y520S6ajY-5QoD8mIqj7eS3buWrqZfQK-w9JRMOj4Pww8H9AN8-zRPwptmga3AYVq8vG5s3hJx8FbhHm2X_yxeuPLl3Scnc-PiV0wd2AC9K9MCszsWLY8GLOJfVB0FnajFoSZUsyhMLs5leik_WahevndnPBz_owDqweyFtghhsC7CbZyb7FdLTZhlsU9K8q4rGNznieN2MjCPX-FSV9BdXjA"/>
+<div class="absolute inset-0 bg-primary/20 flex items-center justify-center">
+<span class="w-2 h-2 rounded-full bg-primary-fixed"></span>
+</div>
+</button>
+<button class="relative aspect-square rounded-lg overflow-hidden bg-surface-container-high focus:outline-none transition-transform hover:scale-105 opacity-70 hover:opacity-100" data-sample="1" type="button">
+<img alt="Elder wise person sample" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2kTieliximgyCgmVe2CSylBP-MSI4toG0VeE0OQECwX6zQfULI5u_BJQBst3oos6Duk09i4qju5LMXXZFcmk_bX8bblvbWZNv_xdd2_C9JUwToWmHVDaQmtlrPIn91548q8xbhdDlKuj88R9jdVj3AD2GkYQJA9Z3eByhR5yLJx1K-mCZV1RnK68LWFUw3-F6VMpdfQZCF6ZMRcRNR3_-XapIRsRZG3WRJvY7I3M6O9HTQEyClnqv4Q"/>
+</button>
+<button class="relative aspect-square rounded-lg overflow-hidden bg-surface-container-high focus:outline-none transition-transform hover:scale-105 opacity-70 hover:opacity-100" data-sample="2" type="button">
+<img alt="Degraded blur portrait sample" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJFiLVWa-W9_sxJcm4P1VUnts1PqO6lYyApMkvRf5RZ2-zRBzrtssAGH99lOBI2wVOIoYYmjDVU2snIuOWmSLhSabAmY8S77mqLXI0bYrYVkuxE9wsMz7k0T-_B3QBCQlapX33mmO1EuKkX8KzhsKm6OloeZv5TMeuB_-GAaSHEujkVgz4_h54SUDBteR3pKRKUvw8cJynY3-zkelr03y3XNIjN8P5xVUvlC3YeY3xWrFgPbJYbryYqA"/>
+</button>
+<button class="relative aspect-square rounded-lg overflow-hidden bg-surface-container-high focus:outline-none transition-transform hover:scale-105 opacity-70 hover:opacity-100" data-sample="3" type="button">
+<img class="w-full h-full object-cover" data-alt="Architectural neoclassical stone building facade landmark with detailed columns, atmospheric twilight lighting, photographic realism" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBeMaA_Qv1_G0g4bYzQkLlYXzpp7O_1kyonyzmY6BM9fUCRGz7F95BSrz4DoRomxInZIWjGzWfxjWsHiXIhx8jc7cp8lQPmWtyv9UHuUZbH6OinMG0p0Fr7nOE_s7G1qsi0cXHmexSOGntNpld6p2kb5zeiukdSV70VFyWOVinW_1KW2F82_6tRLhVn4q7F68gFNIfOTjPBcSmggU71vWYx6rg_D98hOVeU776pmc8Gyl1WCQPNPaR1Ag"/>
+</button>
+</div>
+</div>
+<!-- Corruption Type Selector -->
+<div class="flex flex-col gap-space-xs">
+<span class="font-label-code text-label-code text-on-surface-variant font-medium">Synthetic Corruption Type</span>
+<div class="grid grid-cols-2 gap-space-xs" id="corruption-chips">
+<button class="chip-item flex items-center justify-between px-space-sm py-space-xs rounded-lg bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm hover:text-on-surface transition-all" type="button">
+<span>None</span>
+</button>
+<button class="chip-item flex items-center justify-between px-space-sm py-space-xs rounded-lg bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm hover:text-on-surface transition-all" type="button">
+<span>Salt &amp; Pepper</span>
+</button>
+<button class="chip-item active-chip flex items-center justify-between px-space-sm py-space-xs rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-on-primary-container font-body-sm text-body-sm font-semibold shadow-sm transition-all" type="button">
+<span>Gaussian Blur</span>
+<span class="material-symbols-outlined text-base">check</span>
+</button>
+<button class="chip-item flex items-center justify-between px-space-sm py-space-xs rounded-lg bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm hover:text-on-surface transition-all" type="button">
+<span>Occlusion</span>
+</button>
+</div>
+</div>
+<!-- Severity Segmented Control -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-code text-label-code text-on-surface-variant font-medium">Degradation Severity</span>
+<span class="font-pill-tag text-pill-tag text-primary">Kernel Size: 15px</span>
+</div>
+<div class="grid grid-cols-3 gap-1 bg-surface-container-lowest p-1 rounded-xl">
+<button class="py-space-xs px-1 rounded-lg text-center font-label-code text-label-code text-on-surface-variant hover:text-on-surface transition-all" type="button">
+                Low (σ=1.2)
+              </button>
+<button class="py-space-xs px-1 rounded-lg text-center font-label-code text-label-code text-primary-fixed bg-surface-container-high font-semibold shadow-[0_0_12px_rgba(192,193,255,0.15)] transition-all" type="button">
+                Med (σ=2.5)
+              </button>
+<button class="py-space-xs px-1 rounded-lg text-center font-label-code text-label-code text-on-surface-variant hover:text-on-surface transition-all" type="button">
+                High (σ=4.0)
+              </button>
+</div>
+</div>
+<!-- Hyperparameters Collapsible Subpanel -->
+<div class="bg-surface-container-lowest/80 rounded-xl p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between cursor-pointer">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-sm text-tertiary">settings_input_component</span>
+<span class="font-label-code text-label-code text-on-surface font-medium">Model Hyperparameters</span>
+</div>
+<span class="material-symbols-outlined text-sm text-outline">expand_more</span>
+</div>
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center font-label-code text-label-code">
+<span class="text-on-surface-variant">Iterations</span>
+<span class="text-on-surface font-semibold">20</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full w-[40%]"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center font-label-code text-label-code">
+<span class="text-on-surface-variant">Guidance Scale</span>
+<span class="text-on-surface font-semibold">3.5</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-gradient-to-r from-primary to-secondary h-full rounded-full w-[58%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Primary Execution CTA -->
+<button class="w-full py-space-md px-space-lg rounded-xl font-headline-sm text-headline-sm font-semibold text-white bg-gradient-to-r from-primary-container via-secondary-container to-inverse-primary hover:opacity-95 shadow-[0_0_24px_rgba(128,131,255,0.35)] active:scale-[0.99] transition-all flex items-center justify-center gap-space-sm" id="run-btn" type="button">
+<span class="material-symbols-outlined text-xl" style="font-variation-settings: 'FILL' 1;">auto_fix_high</span>
+<span>Run Universal Restoration</span>
+</button>
+</div>
+<!-- Latent Diagnostic Telemetry Miniature -->
+<div class="bg-surface-container-low/70 rounded-xl p-space-md flex flex-col gap-space-xs">
+<div class="flex items-center justify-between text-outline font-label-code text-label-code">
+<span>DISPATCH STATUS</span>
+<span class="text-tertiary">IDLE // READY</span>
+</div>
+<div class="flex items-center justify-between font-label-code text-label-code text-on-surface-variant">
+<span>Input Dimensions</span>
+<span class="font-stat-metric text-sm text-on-surface">1 × 3 × 1024 × 1024</span>
+</div>
+</div>
+</div>
+<!-- RIGHT RESULTS AND ANALYSIS COLUMN (lg:col-span-8) -->
+<div class="lg:col-span-8 xl:col-span-8 flex flex-col gap-space-lg">
+<!-- Tri-Panel Image Comparison Strip -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- PANEL 1: Clean / Original Reference -->
+<div class="flex flex-col bg-surface-container-low rounded-xl overflow-hidden shadow-md group">
+<div class="px-space-md py-space-sm bg-surface-container-high/80 flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Clean / Original</span>
+<span class="font-pill-tag text-pill-tag px-space-xs py-0.5 rounded-full bg-surface-container-lowest text-outline font-semibold">Reference</span>
+</div>
+<div class="relative aspect-square w-full bg-surface-container-lowest overflow-hidden">
+<img alt="Clean high resolution reference sample" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFQNPAe02ndMfJ4Lpkb4CgWCUUG7gq9y520S6ajY-5QoD8mIqj7eS3buWrqZfQK-w9JRMOj4Pww8H9AN8-zRPwptmga3AYVq8vG5s3hJx8FbhHm2X_yxeuPLl3Scnc-PiV0wd2AC9K9MCszsWLY8GLOJfVB0FnajFoSZUsyhMLs5leik_WahevndnPBz_owDqweyFtghhsC7CbZyb7FdLTZhlsU9K8q4rGNznieN2MjCPX-FSV9BdXjA"/>
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-surface-container-lowest/80 backdrop-blur-md font-pill-tag text-pill-tag text-on-surface">
+                GT REF
+              </div>
+</div>
+<div class="px-space-md py-space-sm bg-surface-container flex items-center justify-between font-label-code text-label-code text-on-surface-variant">
+<span>1024 × 1024 px</span>
+<button class="p-space-xs rounded-lg hover:bg-surface-container-high text-on-surface transition-colors" title="Export Reference Tensor" type="button">
+<span class="material-symbols-outlined text-base">download</span>
+</button>
+</div>
+</div>
+<!-- PANEL 2: Corrupted Input Panel -->
+<div class="flex flex-col bg-surface-container-low rounded-xl overflow-hidden shadow-md group">
+<div class="px-space-md py-space-sm bg-surface-container-high/80 flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Corrupted Input</span>
+<span class="font-pill-tag text-pill-tag px-space-xs py-0.5 rounded-full bg-error-container/30 text-error font-semibold">Blur (Med)</span>
+</div>
+<div class="relative aspect-square w-full bg-surface-container-lowest overflow-hidden">
+<img alt="Degraded blur portrait sample" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJFiLVWa-W9_sxJcm4P1VUnts1PqO6lYyApMkvRf5RZ2-zRBzrtssAGH99lOBI2wVOIoYYmjDVU2snIuOWmSLhSabAmY8S77mqLXI0bYrYVkuxE9wsMz7k0T-_B3QBCQlapX33mmO1EuKkX8KzhsKm6OloeZv5TMeuB_-GAaSHEujkVgz4_h54SUDBteR3pKRKUvw8cJynY3-zkelr03y3XNIjN8P5xVUvlC3YeY3xWrFgPbJYbryYqA"/>
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-error-container/80 backdrop-blur-md font-pill-tag text-pill-tag text-on-error">
+                σ = 2.5
+              </div>
+</div>
+<div class="px-space-md py-space-sm bg-surface-container flex items-center justify-between font-label-code text-label-code text-on-surface-variant">
+<span>Noise: Gaussian Kernel</span>
+<button class="p-space-xs rounded-lg hover:bg-surface-container-high text-on-surface transition-colors" title="Export Corrupted Sample" type="button">
+<span class="material-symbols-outlined text-base">download</span>
+</button>
+</div>
+</div>
+<!-- PANEL 3: Restored Output Panel -->
+<div class="flex flex-col bg-surface-container-low rounded-xl overflow-hidden shadow-md group relative">
+<!-- Photonic Glow Rim Indicator -->
+<div class="px-space-md py-space-sm bg-surface-container-high/80 flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-on-surface">Restored Output</span>
+<span class="font-pill-tag text-pill-tag px-space-xs py-0.5 rounded-full bg-tertiary-container/30 text-tertiary-fixed font-semibold">UniRest-v2</span>
+</div>
+<div class="relative aspect-square w-full bg-surface-container-lowest overflow-hidden">
+<img alt="Restored output image sample" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDFQNPAe02ndMfJ4Lpkb4CgWCUUG7gq9y520S6ajY-5QoD8mIqj7eS3buWrqZfQK-w9JRMOj4Pww8H9AN8-zRPwptmga3AYVq8vG5s3hJx8FbhHm2X_yxeuPLl3Scnc-PiV0wd2AC9K9MCszsWLY8GLOJfVB0FnajFoSZUsyhMLs5leik_WahevndnPBz_owDqweyFtghhsC7CbZyb7FdLTZhlsU9K8q4rGNznieN2MjCPX-FSV9BdXjA"/>
+<div class="absolute bottom-2 left-2 px-space-xs py-0.5 rounded bg-tertiary-container/80 backdrop-blur-md font-pill-tag text-pill-tag text-on-tertiary">
+                RESTORED
+              </div>
+<div class="absolute top-2 right-2 flex items-center gap-1 px-space-xs py-0.5 rounded-full bg-surface-container-lowest/80 backdrop-blur-md font-pill-tag text-pill-tag text-tertiary">
+<span class="material-symbols-outlined text-xs">verified</span>
+<span>Zero-Shot</span>
+</div>
+</div>
+<div class="px-space-md py-space-sm bg-surface-container flex items-center justify-between font-label-code text-label-code text-on-surface-variant">
+<span class="text-tertiary">1024 × 1024 px (FP16)</span>
+<button class="p-space-xs rounded-lg bg-primary-container text-on-primary-container hover:opacity-90 transition-opacity" title="Download Restored Image" type="button">
+<span class="material-symbols-outlined text-base">download</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Metrics Strip (4 Stat Tiles Bento Grid) -->
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<!-- Tile 1: Latency -->
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-outline">
+<span class="font-pill-tag text-pill-tag uppercase tracking-wider">Inference Time</span>
+<span class="material-symbols-outlined text-lg text-tertiary">bolt</span>
+</div>
+<div class="my-space-sm">
+<div class="font-stat-metric text-stat-metric text-on-surface">42.8 <span class="font-body-md text-body-md text-on-surface-variant">ms</span></div>
+</div>
+<div class="flex items-center">
+<span class="font-pill-tag text-pill-tag px-space-xs py-0.5 rounded-full bg-surface-container-high text-tertiary font-medium">⚡ Real-time TensorRT</span>
+</div>
+</div>
+<!-- Tile 2: PSNR -->
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-outline">
+<span class="font-pill-tag text-pill-tag uppercase tracking-wider">Peak SNR</span>
+<span class="material-symbols-outlined text-lg text-primary">show_chart</span>
+</div>
+<div class="my-space-sm">
+<div class="font-stat-metric text-stat-metric text-tertiary">34.62 <span class="font-body-md text-body-md text-on-surface-variant">dB</span></div>
+</div>
+<div class="flex items-center">
+<span class="font-pill-tag text-pill-tag px-space-xs py-0.5 rounded-full bg-tertiary-container/30 text-tertiary font-semibold">+12.4 dB gain</span>
+</div>
+</div>
+<!-- Tile 3: SSIM -->
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-outline">
+<span class="font-pill-tag text-pill-tag uppercase tracking-wider">Structural Sim.</span>
+<span class="material-symbols-outlined text-lg text-primary-container">layers</span>
+</div>
+<div class="my-space-sm">
+<div class="font-stat-metric text-stat-metric text-primary">0.948</div>
+</div>
+<div class="flex items-center">
+<span class="font-pill-tag text-pill-tag px-space-xs py-0.5 rounded-full bg-primary-container/20 text-primary-fixed font-semibold">+0.312 delta</span>
+</div>
+</div>
+<!-- Tile 4: Degradation Configuration Summary -->
+<div class="bg-surface-container-low/80 backdrop-blur-md rounded-xl p-space-md flex flex-col justify-between shadow-sm">
+<div class="flex items-center justify-between text-outline">
+<span class="font-pill-tag text-pill-tag uppercase tracking-wider">Active Pipeline</span>
+<span class="material-symbols-outlined text-lg text-outline">schema</span>
+</div>
+<div class="my-space-sm">
+<div class="font-label-code text-label-code text-on-surface font-semibold truncate" title="Gaussian Blur (σ=2.5, k=15)">Gaussian Blur</div>
+<span class="font-pill-tag text-pill-tag text-outline">σ=2.5 • k=15</span>
+</div>
+<div class="flex items-center">
+<span class="font-pill-tag text-pill-tag px-space-xs py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">Active pipeline</span>
+</div>
+</div>
+</div>
+<!-- Quick Execution Summary & Telemetry Terminal Strip -->
+<div class="bg-surface-container-lowest rounded-xl p-space-md flex flex-col md:flex-row items-start md:items-center justify-between gap-space-md shadow-inner">
+<div class="flex items-center gap-space-md">
+<div class="w-8 h-8 rounded-lg bg-surface-container flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-base">terminal</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs font-label-code text-label-code">
+<span class="text-on-surface font-medium">Batch #08492 Processed</span>
+<span class="text-outline">•</span>
+<span class="text-tertiary">Converged at step 20</span>
+</div>
+<span class="font-pill-tag text-pill-tag text-outline">Tensor shape: [1, 3, 1024, 1024] • Precision: Torch.float16 • Zero CUDA sync errors</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm font-label-code text-label-code">
+<span class="text-on-surface-variant">VRAM Peak: <strong class="text-on-surface">3.82 GB</strong></span>
+<div class="w-1.5 h-1.5 rounded-full bg-outline"></div>
+<span class="text-on-surface-variant">Host Latency: <strong class="text-on-surface">2.1 ms</strong></span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    // Micro-interactions for interactive chips and samples
+    document.querySelectorAll('#corruption-chips .chip-item').forEach(button => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('#corruption-chips .chip-item').forEach(b => {
+          b.className = 'chip-item flex items-center justify-between px-space-sm py-space-xs rounded-lg bg-surface-container-high text-on-surface-variant font-body-sm text-body-sm hover:text-on-surface transition-all';
+          const icon = b.querySelector('.material-symbols-outlined');
+          if (icon) icon.remove();
+        });
+        button.className = 'chip-item active-chip flex items-center justify-between px-space-sm py-space-xs rounded-lg bg-gradient-to-r from-primary-container to-secondary-container text-on-primary-container font-body-sm text-body-sm font-semibold shadow-sm transition-all';
+        const checkIcon = document.createElement('span');
+        checkIcon.className = 'material-symbols-outlined text-base';
+        checkIcon.textContent = 'check';
+        button.appendChild(checkIcon);
+      });
+    });
+
+    document.querySelectorAll('#sample-selector button').forEach((thumb, idx) => {
+      thumb.addEventListener('click', () => {
+        document.querySelectorAll('#sample-selector button').forEach(t => {
+          t.className = 'relative aspect-square rounded-lg overflow-hidden bg-surface-container-high focus:outline-none transition-transform hover:scale-105 opacity-70 hover:opacity-100';
+          const overlay = t.querySelector('.absolute.inset-0');
+          if (overlay) overlay.remove();
+        });
+        thumb.className = 'relative aspect-square rounded-lg overflow-hidden shadow-md bg-surface-container-high focus:outline-none transition-transform hover:scale-105';
+        const overlay = document.createElement('div');
+        overlay.className = 'absolute inset-0 bg-primary/20 flex items-center justify-center';
+        overlay.innerHTML = '<span class="w-2 h-2 rounded-full bg-primary-fixed"></span>';
+        thumb.appendChild(overlay);
+      });
+    });
+
+    const runBtn = document.getElementById('run-btn');
+    if (runBtn) {
+      runBtn.addEventListener('click', () => {
+        const originalText = runBtn.innerHTML;
+        runBtn.innerHTML = '<span class="material-symbols-outlined text-xl animate-spin">refresh</span><span>Reconstructing Latents...</span>';
+        runBtn.disabled = true;
+        setTimeout(() => {
+          runBtn.innerHTML = originalText;
+          runBtn.disabled = false;
+        }, 1200);
+      });
+    }
+  </script>
+</div></main></div></body></html>

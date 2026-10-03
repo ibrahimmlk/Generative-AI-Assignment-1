@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { sketch } from "../api";
 import ImageInput from "./ImageInput";
-import { Card, ErrorBox, ImagePanel, Spinner, Stat, download } from "./ui";
+import { Card, ErrorBox, Icon, ImagePanel, PageHeader, Spinner, Stat, download } from "./ui";
 
 const STYLES = [
-  { id: 1, name: "Style 1", hint: "FS2K style category 1" },
-  { id: 2, name: "Style 2", hint: "FS2K style category 2" },
-  { id: 3, name: "Style 3", hint: "FS2K style category 3" },
+  { id: 1, name: "Style 1", hint: "FS2K style category 1", icon: "edit" },
+  { id: 2, name: "Style 2", hint: "FS2K style category 2", icon: "brush" },
+  { id: 3, name: "Style 3", hint: "FS2K style category 3", icon: "polyline" },
 ];
 
 export default function SketchWorkspace() {
@@ -33,61 +33,83 @@ export default function SketchWorkspace() {
   }
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold text-white">Face-to-Sketch Generator</h1>
-        <p className="mt-1 max-w-3xl text-sm text-slate-400">
-          Conditional pix2pix GAN (U-Net generator + PatchGAN discriminator) trained on FS2K. The selected style is fed to the
-          generator as a learned categorical embedding.
-        </p>
-      </div>
-      <div className="grid gap-6 xl:grid-cols-[340px_1fr]">
-        <Card title="Input" subtitle="Faces are centre-cropped to a square and resized to 128×128">
-          <div className="space-y-5">
-            <ImageInput kind="faces" value={image} onChange={setImage} webcam />
-            <div>
-              <div className="mb-2 text-[11px] uppercase tracking-wide text-slate-500">Sketch style</div>
-              <div className="grid grid-cols-3 gap-2">
-                {STYLES.map((s) => (
-                  <button
-                    key={s.id}
-                    onClick={() => setStyle(s.id)}
-                    className={`rounded-xl border p-3 text-left transition ${
-                      style === s.id ? "border-indigo-400 bg-indigo-500/15" : "border-slate-700 hover:border-slate-500"
-                    }`}
-                  >
-                    <div className={`text-sm font-semibold ${style === s.id ? "text-indigo-200" : "text-slate-200"}`}>{s.name}</div>
-                    <div className="mt-0.5 text-[10px] leading-tight text-slate-500">{s.hint}</div>
-                  </button>
-                ))}
-              </div>
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        eyebrow="TASK 4 // STYLE-CONDITIONED PIX2PIX GAN"
+        title="Face-to-Sketch Generator"
+        description="U-Net generator G(x, s) with a learned style embedding, trained adversarially against a style-conditioned PatchGAN discriminator on paired FS2K photographs and sketches."
+        right={
+          <div className="flex items-center gap-4 self-start rounded-xl bg-surface-container-low px-4 py-2 shadow-sm md:self-auto">
+            <div className="flex flex-col">
+              <span className="font-mono text-[11px] uppercase text-outline">ONNX model</span>
+              <span className="font-mono text-[13px] font-semibold text-on-surface">sketch_generator.onnx</span>
             </div>
-            <button
-              onClick={run}
-              disabled={loading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-500 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-500/20 transition hover:bg-indigo-400 disabled:opacity-60"
-            >
-              {loading && <Spinner />} Generate sketch
-            </button>
-            <ErrorBox error={error} />
+            <div className="h-6 w-px bg-surface-container-highest" />
+            <span className="pill bg-surface-container-highest text-tertiary">Generator only</span>
           </div>
-        </Card>
-        <div className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <ImagePanel label="Original photograph" src={result?.photo} filename="photo.png" />
-            <ImagePanel label={`Generated sketch${result ? ` — Style ${result.style}` : ""}`} src={result?.sketch} filename={`sketch_style${result?.style}.png`} />
+        }
+      />
+      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-12">
+        <div className="lg:col-span-4">
+          <Card title="Portrait Input & Style" icon="tune" subtitle="Faces are centre-cropped to a square and resized to 128×128">
+            <div className="flex flex-col gap-5">
+              <ImageInput kind="faces" value={image} onChange={setImage} webcam />
+              <div className="flex flex-col gap-1.5">
+                <span className="font-mono text-[13px] font-medium text-on-surface-variant">Sketch Style Condition</span>
+                <div className="grid grid-cols-3 gap-2">
+                  {STYLES.map((s) => (
+                    <button
+                      key={s.id}
+                      onClick={() => setStyle(s.id)}
+                      className={`flex flex-col items-start gap-1 rounded-xl p-3 text-left transition ${
+                        style === s.id
+                          ? "bg-gradient-to-br from-primary-container/40 to-secondary-container/40 ring-2 ring-primary"
+                          : "bg-surface-container-high hover:bg-surface-container-highest"
+                      }`}
+                    >
+                      <div className="flex w-full items-center justify-between">
+                        <Icon name={s.icon} className={`text-lg ${style === s.id ? "text-primary-fixed" : "text-outline"}`} />
+                        <Icon name={style === s.id ? "radio_button_checked" : "radio_button_unchecked"} className="text-base text-primary" />
+                      </div>
+                      <div className={`font-display text-sm font-semibold ${style === s.id ? "text-primary-fixed" : "text-on-surface"}`}>{s.name}</div>
+                      <div className="text-[10px] leading-tight text-outline">{s.hint}</div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <button onClick={run} disabled={loading} className="btn-primary">
+                {loading ? <Spinner /> : <Icon name="draw" className="text-xl" />}
+                <span>{loading ? "Generating…" : "Generate Sketch"}</span>
+              </button>
+              <ErrorBox error={error} />
+            </div>
+          </Card>
+        </div>
+        <div className="flex flex-col gap-6 lg:col-span-8">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <ImagePanel label="Original Photo" src={result?.photo} filename="photo.png" tag="Input" footer="128 × 128 RGB" />
+            <ImagePanel
+              label="Generated Sketch"
+              src={result?.sketch}
+              filename={`sketch_style${result?.style}.png`}
+              tag={result ? `Style ${result.style}` : null}
+              tagTone="tertiary"
+              footer="G(x, s) output"
+              highlight
+            />
           </div>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-            <Stat label="Inference time" value={result ? `${result.inference_ms.toFixed(1)} ms` : null} hint={result && `round-trip ${result.roundtrip_ms.toFixed(0)} ms`} accent="text-indigo-300" />
-            <Stat label="Style condition" value={result ? `Style ${result.style}` : null} hint="embedding index" />
-            <Stat label="Resolution" value="128 × 128" hint="generator input / output" />
-            <div className="flex items-center rounded-xl border border-slate-800 bg-slate-950/60 px-4 py-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <Stat label="Inference time" icon="timer" iconColor="text-tertiary" value={result ? result.inference_ms.toFixed(1) : null} unit="ms" hint={result && `round-trip ${result.roundtrip_ms.toFixed(0)} ms`} />
+            <Stat label="Style condition" icon="linear_scale" value={result ? `Style ${result.style}` : null} hint="learned embedding" />
+            <Stat label="Resolution" icon="crop" value="128²" hint="generator in / out" />
+            <div className="flex flex-col justify-center gap-2 rounded-xl bg-surface-container-low/80 p-4 shadow-sm">
+              <span className="font-mono text-[11px] font-semibold uppercase tracking-wider text-outline">Export</span>
               <button
                 disabled={!result}
                 onClick={() => download(result.sketch, `sketch_style${result.style}.png`)}
-                className="w-full rounded-lg bg-slate-800 px-3 py-2 text-sm font-medium text-slate-100 hover:bg-slate-700 disabled:opacity-40"
+                className="flex items-center justify-center gap-2 rounded-lg bg-primary-container px-3 py-2 text-sm font-semibold text-on-primary-container hover:opacity-90 disabled:opacity-40"
               >
-                ↓ Download sketch
+                <Icon name="download" className="text-lg" /> Download sketch
               </button>
             </div>
           </div>
