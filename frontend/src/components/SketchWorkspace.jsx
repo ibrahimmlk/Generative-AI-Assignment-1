@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { sketch } from "../api";
 import ImageInput from "./ImageInput";
 import { Card, ErrorBox, Icon, ImagePanel, PageHeader, Spinner, Stat, download } from "./ui";
@@ -16,14 +16,25 @@ export default function SketchWorkspace() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  async function run() {
-    if (!image) return setError("Upload a face photo, capture one with the webcam, or pick a sample.");
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (!q.get("autorun")) return;
+    const sample = q.get("sample") || "faces/face_1.png";
+    const img = { sample, preview: `/api/sample-files/${sample}`, label: sample };
+    const st = Number(q.get("style") || 1);
+    setImage(img);
+    setStyle(st);
+    run(img, st);
+  }, []);
+
+  async function run(img = image, st = style) {
+    if (!img) return setError("Upload a face photo, capture one with the webcam, or pick a sample.");
     setLoading(true);
     setError(null);
     try {
       const t0 = performance.now();
-      const r = await sketch({ file: image.file, sample: image.sample, style });
-      r.roundtrip_ms = performance.now() - t0;
+      const r = await sketch({ file: img.file, sample: img.sample, style: st });
+      r.roundtrip_ms = new URLSearchParams(window.location.search).get("autorun") ? null : performance.now() - t0;
       setResult(r);
     } catch (e) {
       setError(e.message);
@@ -77,7 +88,7 @@ export default function SketchWorkspace() {
                   ))}
                 </div>
               </div>
-              <button onClick={run} disabled={loading} className="btn-primary">
+              <button onClick={() => run()} disabled={loading} className="btn-primary">
                 {loading ? <Spinner /> : <Icon name="draw" className="text-xl" />}
                 <span>{loading ? "Generating…" : "Generate Sketch"}</span>
               </button>
@@ -99,7 +110,7 @@ export default function SketchWorkspace() {
             />
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Stat label="Inference time" icon="timer" iconColor="text-tertiary" value={result ? result.inference_ms.toFixed(1) : null} unit="ms" hint={result && `round-trip ${result.roundtrip_ms.toFixed(0)} ms`} />
+            <Stat label="Inference time" icon="timer" iconColor="text-tertiary" value={result ? result.inference_ms.toFixed(1) : null} unit="ms" hint={result?.roundtrip_ms != null ? `round-trip ${result.roundtrip_ms.toFixed(0)} ms` : "ONNX Runtime session.run"} />
             <Stat label="Style condition" icon="linear_scale" value={result ? `Style ${result.style}` : null} hint="learned embedding" />
             <Stat label="Resolution" icon="crop" value="128²" hint="generator in / out" />
             <div className="flex flex-col justify-center gap-2 rounded-xl bg-surface-container-low/80 p-4 shadow-sm">

@@ -1,23 +1,23 @@
 {
   "study": "t2_specialists",
-  "n_trials": 2,
-  "completed": 2,
+  "n_trials": 8,
+  "completed": 8,
   "pruned": 0,
   "failed": 0,
-  "best_trial": 0,
-  "best_value": 0.3024320820967356,
+  "best_trial": 4,
+  "best_value": 0.6453983426094054,
   "best_params": {
-    "lr": 0.0003574712922600243,
+    "lr": 0.00024112898115291975,
     "batch_size": 16,
-    "latent_ch": 8,
-    "base": 32,
-    "alpha": 0.5092630224331111
+    "latent_ch": 32,
+    "base": 48,
+    "alpha": 0.7690549904649883
   },
   "trials": [
     {
       "number": 0,
       "state": "COMPLETE",
-      "value": 0.3024320820967356,
+      "value": 0.637090657154719,
       "params": {
         "lr": 0.0003574712922600243,
         "batch_size": 16,
@@ -26,15 +26,15 @@
         "alpha": 0.5092630224331111
       },
       "user_attrs": {
-        "score_blur": 0.29950317144393923,
-        "score_occlusion": 0.3062214493751526,
-        "score_salt_pepper": 0.3015716254711151
+        "score_blur": 0.6724371969699859,
+        "score_occlusion": 0.5669441103935242,
+        "score_salt_pepper": 0.671890664100647
       }
     },
     {
       "number": 1,
       "state": "COMPLETE",
-      "value": 0.15018161634604138,
+      "value": 0.5880315363407135,
       "params": {
         "lr": 0.002708160864249967,
         "batch_size": 16,
@@ -43,9 +43,111 @@
         "alpha": 0.5627722372934189
       },
       "user_attrs": {
-        "score_blur": 0.1587373673915863,
-        "score_occlusion": 0.1424557536840439,
-        "score_salt_pepper": 0.1493517279624939
+        "score_blur": 0.6334856748580933,
+        "score_occlusion": 0.5023753881454468,
+        "score_salt_pepper": 0.6282335460186005
+      }
+    },
+    {
+      "number": 2,
+      "state": "COMPLETE",
+      "value": 0.6129451056321461,
+      "params": {
+        "lr": 0.00027010527749605503,
+        "batch_size": 64,
+        "latent_ch": 32,
+        "base": 48,
+        "alpha": 0.5292732168433758
+      },
+      "user_attrs": {
+        "score_blur": 0.652617871761322,
+        "score_occlusion": 0.5573492407798767,
+        "score_salt_pepper": 0.6288682043552398
+      }
+    },
+    {
+      "number": 3,
+      "state": "COMPLETE",
+      "value": 0.5766233623027801,
+      "params": {
+        "lr": 0.00252126790477792,
+        "batch_size": 16,
+        "latent_ch": 16,
+        "base": 48,
+        "alpha": 0.9091941809354519
+      },
+      "user_attrs": {
+        "score_blur": 0.6119243681430817,
+        "score_occlusion": 0.5129482865333557,
+        "score_salt_pepper": 0.604997432231903
+      }
+    },
+    {
+      "number": 4,
+      "state": "COMPLETE",
+      "value": 0.6453983426094054,
+      "params": {
+        "lr": 0.00024112898115291975,
+        "batch_size": 16,
+        "latent_ch": 32,
+        "base": 48,
+        "alpha": 0.7690549904649883
+      },
+      "user_attrs": {
+        "score_blur": 0.6919587075710296,
+        "score_occlusion": 0.5838029026985169,
+        "score_salt_pepper": 0.66043341755867
+      }
+    },
+    {
+      "number": 5,
+      "state": "COMPLETE",
+      "value": 0.5760912815729776,
+      "params": {
+        "lr": 0.002299958642814372,
+        "batch_size": 32,
+        "latent_ch": 16,
+        "base": 32,
+        "alpha": 0.7442132374212118
+      },
+      "user_attrs": {
+        "score_blur": 0.6107128679752349,
+        "score_occlusion": 0.5139632403850556,
+        "score_salt_pepper": 0.6035977363586426
+      }
+    },
+    {
+      "number": 6,
+      "state": "COMPLETE",
+      "value": 0.560952200492223,
+      "params": {
+        "lr": 0.00016149614799999194,
+        "batch_size": 64,
+        "latent_ch": 8,
+        "base": 32,
+        "alpha": 0.8470716560086755
+      },
+      "user_attrs": {
+        "score_blur": 0.5984971523284912,
+        "score_occlusion": 0.5055332779884338,
+        "score_salt_pepper": 0.5788261711597442
+      }
+    },
+    {
+      "number": 7,
+      "state": "COMPLETE",
+      "value": 0.5881070633729298,
+      "params": {
+        "lr": 0.00012863908101989929,
+        "batch_size": 64,
+        "latent_ch": 8,
+        "base": 64,
+        "alpha": 0.7869008621098459
+      },
+      "user_attrs": {
+        "score_blur": 0.6251157283782959,
+        "score_occlusion": 0.5329590320587159,
+        "score_salt_pepper": 0.606246429681778
       }
     }
   ]

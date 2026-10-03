@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { restore } from "../api";
 import ImageInput from "./ImageInput";
 import { Bars, Card, ErrorBox, Icon, ImagePanel, PageHeader, Spinner, StackedBar, Stat, pretty } from "./ui";
@@ -33,14 +33,28 @@ export default function RestorationWorkspace({ mode, title, eyebrow, description
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  async function run() {
-    if (!image) return setError("Choose a sample or upload an image first.");
+  // ?autorun=1&sample=pets/pet_1.png&corruption=blur&severity=high runs once on load (used for screenshots / demos)
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (!q.get("autorun")) return;
+    const sample = q.get("sample") || "pets/pet_1.png";
+    const img = { sample, preview: `/api/sample-files/${sample}`, label: sample };
+    const c = q.get("corruption") || corruption;
+    const sv = q.get("severity") || severity;
+    setImage(img);
+    setCorruption(c);
+    setSeverity(sv);
+    run(img, c, sv);
+  }, []);
+
+  async function run(img = image, c = corruption, sv = severity) {
+    if (!img) return setError("Choose a sample or upload an image first.");
     setLoading(true);
     setError(null);
     try {
       const t0 = performance.now();
-      const r = await restore(mode, { file: image.file, sample: image.sample, corruption, severity, seed });
-      r.roundtrip_ms = performance.now() - t0;
+      const r = await restore(mode, { file: img.file, sample: img.sample, corruption: c, severity: sv, seed });
+      r.roundtrip_ms = new URLSearchParams(window.location.search).get("autorun") ? null : performance.now() - t0;
       setResult(r);
     } catch (e) {
       setError(e.message);
@@ -194,7 +208,7 @@ export default function RestorationWorkspace({ mode, title, eyebrow, description
                   </div>
                 </div>
               )}
-              <button onClick={run} disabled={loading} className="btn-primary">
+              <button onClick={() => run()} disabled={loading} className="btn-primary">
                 {loading ? <Spinner /> : <Icon name="auto_fix_high" className="text-xl" />}
                 <span>{loading ? "Running…" : runLabel}</span>
               </button>
@@ -222,7 +236,7 @@ export default function RestorationWorkspace({ mode, title, eyebrow, description
             {result?.error_map && <ImagePanel label="|Error| Map" src={result.error_map} filename="error_map.png" tag="vs clean" footer="mean abs. error" />}
           </div>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <Stat label="Inference time" icon="bolt" iconColor="text-tertiary" value={result ? result.inference_ms.toFixed(1) : null} unit="ms" hint={result && `round-trip ${result.roundtrip_ms.toFixed(0)} ms`} />
+            <Stat label="Inference time" icon="bolt" iconColor="text-tertiary" value={result ? result.inference_ms.toFixed(1) : null} unit="ms" hint={result?.roundtrip_ms != null ? `round-trip ${result.roundtrip_ms.toFixed(0)} ms` : "ONNX Runtime session.run"} />
             <Stat label="Peak SNR" icon="show_chart" accent="text-tertiary" value={m ? (m.psnr_output ?? "∞") : null} unit="dB" hint={m && gain(m.psnr_input, m.psnr_output, 2, " dB")} />
             <Stat label="Structural sim." icon="layers" iconColor="text-primary-container" accent="text-primary" value={m ? m.ssim_output : null} hint={m && gain(m.ssim_input, m.ssim_output, 3)} />
             <Stat label="Active pipeline" icon="schema" iconColor="text-outline" value={result ? pretty(result.corruption.type?.split(" ")[0]) : null} hint={result ? describe(result.corruption) : null} />

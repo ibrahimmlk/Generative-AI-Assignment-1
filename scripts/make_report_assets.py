@@ -78,7 +78,7 @@ def main():
         M.update(SPTRIALS=sp["n_trials"], SPBESTPARAMS=params_str(sp["best_params"]))
     hs = load(os.path.join(o, "history", "t2_specialist_blur.json"), [])
     M["SPEPOCHS"] = len(hs)
-    moe = load(os.path.join(o, "optuna", "t3_soft_moe.json"), {})
+    moe = load(os.path.join(o, "optuna", "t3_soft_moe_v2.json"), {})
     if moe:
         M.update(MOETRIALS=moe["n_trials"], MOEBESTPARAMS=params_str(moe["best_params"]),
                  MOECOLLAPSED=sum(1 for t in moe["trials"] if t["user_attrs"].get("pruned_reason") == "routing_collapse"))

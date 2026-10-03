@@ -1,6 +1,6 @@
 {
-  "train": 56,
-  "val": 14,
-  "test": 15,
-  "test_entries": 120
+  "train": 2944,
+  "val": 736,
+  "test": 3669,
+  "test_entries": 36690
 }

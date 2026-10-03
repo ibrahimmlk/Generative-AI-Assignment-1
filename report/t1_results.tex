@@ -1,1 +1,25 @@
-\textit{(pending results)}
+Tables~\ref{tab:psnr_type}--\ref{tab:ssim_sev} report PSNR and SSIM on the full official test set (\NTEST{} images $\times$ 10 conditions) for all restoration systems; the ``Input'' column is the corrupted image itself, i.e.\ the no-restoration baseline. Fig.~\ref{fig:t1ex} shows twelve representative examples and Fig.~\ref{fig:t1fail} four failure cases; Fig.~\ref{fig:curves} shows the training curves.
+
+\input{tables_generated}
+
+\textbf{Per corruption.} The universal DAE raises the average PSNR over all corrupted inputs from \INPUTPSNRCORR{} to \TONEPSNRCORR\,dB and SSIM from \INPUTSSIMCORR{} to \TONESSIMCORR. The gain is largest for salt-and-pepper noise (16.4$\to$28.2\,dB, SSIM 0.38$\to$0.87): impulses are statistically very different from natural image content and are removed almost completely at every severity, so the output quality is nearly independent of $p$ (28.4/28.3/28.0\,dB for low/medium/high). Occlusion is the hardest case (13.6$\to$22.4\,dB): the network fills the holes with a smooth, colour-consistent guess (Fig.~\ref{fig:t1ex}, bottom rows) but cannot hallucinate texture, so the error map is concentrated inside the masks and grows with the occluded area (24.6/22.4/20.1\,dB).
+
+\textbf{The cost of the bottleneck.} Clean inputs come out at 28.4\,dB / 0.875 SSIM, not as identical copies: the $12\times$ compressed latent cannot transmit all high-frequency detail, so every output is slightly smoothed. This sets a ceiling of roughly 28--28.5\,dB that is visible in every row of Table~\ref{tab:psnr_sev}. Consequently, for \emph{mild} blur (low severity, input 32.1\,dB) the DAE makes the image measurably \emph{worse} in PSNR (28.6\,dB), while for medium and high blur it helps (26.9$\to$28.0 and 24.5$\to$25.6\,dB). The same effect lowers SSIM for low-severity occlusion (0.861$\to$0.822): most of the image was already perfect and is smoothed, while only 10\,\% was restored. This is the expected trade-off of a genuine bottleneck without skip connections, and it motivates the identity branch used in Tasks 2 and 3.
+
+\textbf{Optuna.} Eight of the \TONETRIALS{} trials were pruned by the median rule after one or two epochs, which saved roughly half of the search budget. The best configuration uses the widest encoder ($b=64$), a 16-channel bottleneck, a small batch (16) and almost no dropout; the selected $\alpha=\TONEALPHA$ is markedly lower than the suggested 0.8, i.e.\ the search preferred a stronger SSIM term, consistent with~\cite{zhao2017loss}. Training was still improving at epoch \TONEEPOCHS{} (the best validation objective was reached at the last epoch), so a longer schedule would likely help.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.92\textwidth]{t1_examples.png}
+\caption{Task 1: twelve representative test examples (clean target, corrupted input, reconstruction with PSNR, absolute error map). Rows: clean inputs, then salt-and-pepper, blur and occlusion at low/medium/high severity.}
+\label{fig:t1ex}
+\end{figure*}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\columnwidth]{t1_failures.png}
+\caption{Task 1 failure cases (lowest PSNR gain per corruption type and lowest SSIM overall).}
+\label{fig:t1fail}
+\end{figure}
+
+\textbf{Failure cases} (Fig.~\ref{fig:t1fail}). (1) \emph{Image borders:} a photograph with a thin white/black frame and low-severity salt-and-pepper noise reaches only 17.2\,dB, because the decoder cannot reproduce a sharp one-pixel frame through the bottleneck and smears it into a coloured halo. (2) \emph{Saturated flat backgrounds:} for a cat on a uniform purple background with mild blur, the DAE introduces colour shifts in the flat region (24.8\,dB, worse than its input) --- the network has learned to ``sharpen'', which creates artefacts where there is nothing to sharpen. (3) \emph{Occluders on black backgrounds:} when a black mask falls on an already black background, the corruption is invisible, yet the network in-paints a bright, wrong colour into the dark region (12.3\,dB); it has learned the shortcut ``large black area $\Rightarrow$ fill it'', a direct consequence of the black-occluder definition. (4) \emph{High-frequency structure under strong blur:} the slats of a fence blurred with $(7,2.5)$ cannot be recovered (18.1\,dB); the information is destroyed by the blur and the bottleneck cannot hallucinate a periodic pattern.

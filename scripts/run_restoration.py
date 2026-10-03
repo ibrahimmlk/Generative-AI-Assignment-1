@@ -209,7 +209,7 @@ def main():
                        lambda_ce=trial.suggest_float("lambda_ce", 0.01, 0.5, log=True),
                        lambda_bal=trial.suggest_float("lambda_bal", 1e-3, 0.1, log=True), lambda_l1=l1)
             lam = {"l1": l1, "ssim": 1 - l1, "ce": cfg["lambda_ce"], "bal": cfg["lambda_bal"]}
-            run = tracker.start(f"moe-trial-{trial.number}", "t3-moe-optuna", cfg, "optuna")
+            run = tracker.start(f"moe-v2-trial-{trial.number}", "t3-moe-v2-optuna", cfg, "optuna")
             try:
                 best, _ = U.train_moe(build(cfg["tau"]), train_loader, val_loader_all, B["moe_warm"],
                                       B["moe_trial_epochs"], 1e-4, cfg["lr"], lam, tracker, run, trial)
@@ -217,12 +217,12 @@ def main():
                 tracker.finish(run)
             return best
 
-        study = U.run_study("t3_soft_moe", storage, objective, B["moe_trials"], startup=2)
-        U.save_json(U.study_summary(study), os.path.join(out, "optuna", "t3_soft_moe.json"))
+        study = U.run_study("t3_soft_moe_v2", storage, objective, B["moe_trials"], startup=2)
+        U.save_json(U.study_summary(study), os.path.join(out, "optuna", "t3_soft_moe_v2.json"))
         p = study.best_params
         lam = {"l1": p["lambda_l1"], "ssim": 1 - p["lambda_l1"], "ce": p["lambda_ce"], "bal": p["lambda_bal"]}
         moe = build(p["tau"])
-        run = tracker.start("moe-final", "t3-moe-final", {**p, "warmup": B["moe_warm"], "epochs": B["moe_epochs"]})
+        run = tracker.start("moe-v2-final", "t3-moe-v2-final", {**p, "warmup": B["moe_warm"], "epochs": B["moe_epochs"]})
         best, hist = U.train_moe(moe, train_loader, val_loader_all, B["moe_warm"], B["moe_epochs"], 1e-4,
                                  p["lr"], lam, tracker, run)
         torch.save({"tau": p["tau"], "gate_cfg": torch.load(cls_ckpt, weights_only=False)["cfg"],

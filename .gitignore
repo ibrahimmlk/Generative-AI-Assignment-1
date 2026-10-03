@@ -14,3 +14,8 @@ fs2k_check.png
 models/*.onnx
 GenAI_Assignment1.pdf
 shot_*.png
+outputs/
+outputs_sketch/
+outputs_moe_v1/
+*.log
+models/*.onnx

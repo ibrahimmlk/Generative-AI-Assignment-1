@@ -95,8 +95,10 @@ def evaluate_ae(model, loader):
         ps.append(psnr(out, x, "none").cpu())
         ss.append(ssim(out, x, "none").cpu())
         l1.append((out - x).abs().flatten(1).mean(1).cpu())
-    p, s = torch.cat(ps).mean().item(), torch.cat(ss).mean().item()
-    return {"psnr": p, "ssim": s, "l1": torch.cat(l1).mean().item(), "score": val_score(p, s)}
+    ps = torch.cat(ps)
+    p, s = ps.mean().item(), torch.cat(ss).mean().item()
+    pc = ps.clamp(max=40.0).mean().item()     # cap per image BEFORE averaging (identity outputs give ~100 dB)
+    return {"psnr": p, "psnr_capped": pc, "ssim": s, "l1": torch.cat(l1).mean().item(), "score": val_score(pc, s)}
 
 
 def train_ae(model, train_loader, val_loader, epochs, lr, alpha, tracker=None, run=None, trial=None,
@@ -226,8 +228,10 @@ def evaluate_moe(moe, loader):
         ws.append(w.float().cpu())
         ys.append(torch.as_tensor(y))
     w, y = torch.cat(ws), torch.cat(ys)
-    p, s = torch.cat(ps).mean().item(), torch.cat(ss).mean().item()
-    return {"psnr": p, "ssim": s, "score": val_score(p, s), "mean_w": w.mean(0).tolist(),
+    ps = torch.cat(ps)
+    p, s = ps.mean().item(), torch.cat(ss).mean().item()
+    pc = ps.clamp(max=40.0).mean().item()     # cap per image BEFORE averaging (identity branch gives ~100 dB)
+    return {"psnr": p, "psnr_capped": pc, "ssim": s, "score": val_score(pc, s), "mean_w": w.mean(0).tolist(),
             "gate_acc": (w.argmax(1) == y).float().mean().item()}
 
 

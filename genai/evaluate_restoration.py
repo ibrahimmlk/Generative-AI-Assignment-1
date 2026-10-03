@@ -318,7 +318,12 @@ def run_all(trainval, val_man, test, test_man, ck, out, tracker=None, run=None):
     example_grid(models, test, test_man, dist["i"].tolist(), "moe", os.path.join(fig, "t3_distributed_examples.png"),
                  title_fn=wt)
 
-    # ---- mixed corruption stress test (blur + salt-and-pepper), not seen in training
+    mixed_test(models, test, res)
+    _curves_and_optuna(out, fig, tracker, run, by_type, by_sev, cls_test)
+
+
+def mixed_test(models, test, res):
+    """Blur (5, 1.5) followed by salt-and-pepper (p=0.08): a combination never seen in training."""
     mixed = []
     for idx in range(min(300, len(test))):
         mixed.append({"index": idx, "name": "", "seed": 0, "label": 2, "severity": "mixed",
@@ -334,14 +339,18 @@ def run_all(trainval, val_man, test, test_man, ck, out, tracker=None, run=None):
         o, probs, pred, w = models.run(xt, torch.full((len(x),), 2, device=U.DEVICE))
         rows.append({**{m: psnr(o[m], x, "none").cpu().numpy() for m in ["input", "t1", "pred", "moe"]},
                      **{f"ssim_{m}": ssim(o[m], x, "none").cpu().numpy() for m in ["input", "t1", "pred", "moe"]},
-                     "w": w.cpu().numpy(), "pred": pred.cpu().numpy()})
+                     "w": w.cpu().numpy(), "cls": pred.cpu().numpy()})
     mixed_res = {f"psnr_{m}": float(np.concatenate([r[m] for r in rows]).mean()) for m in ["input", "t1", "pred", "moe"]}
     mixed_res.update({f"ssim_{m}": float(np.concatenate([r[f"ssim_{m}"] for r in rows]).mean())
                       for m in ["input", "t1", "pred", "moe"]})
     mixed_res["moe_mean_weights"] = np.concatenate([r["w"] for r in rows]).mean(0).tolist()
-    mixed_res["classifier_pred_share"] = (np.bincount(np.concatenate([r["pred"] for r in rows]), minlength=4)
-                                          / sum(len(r["pred"]) for r in rows)).tolist()
+    mixed_res["classifier_pred_share"] = (np.bincount(np.concatenate([r["cls"] for r in rows]), minlength=4)
+                                          / sum(len(r["cls"]) for r in rows)).tolist()
     U.save_json(mixed_res, os.path.join(res, "mixed_corruption_test.json"))
+    return mixed_res
+
+
+def _curves_and_optuna(out, fig, tracker, run, by_type, by_sev, cls_test):
 
     # ---- training curves + optuna
     hd = os.path.join(out, "history")
@@ -360,7 +369,7 @@ def run_all(trainval, val_man, test, test_man, ck, out, tracker=None, run=None):
                          os.path.join(fig, f"t2_spec_{k}_curves.png"), f"Specialist: {k}")
     if os.path.exists(os.path.join(hd, "t3_soft_moe.json")):
         plot_history(U.load_json(os.path.join(hd, "t3_soft_moe.json")),
-                     [["train_loss", "train_l1", "train_ssim"], ["train_ce", "train_bal"], ["val_psnr"],
+                     [["train_loss", "train_l1", "train_ssim"], ["train_ce", "train_bal"], ["val_psnr_capped", "val_ssim"],
                       ["val_w0", "val_w1", "val_w2", "val_w3"]], os.path.join(fig, "t3_moe_curves.png"),
                      "Task 3 soft MoE (warm-up then joint)")
     plot_optuna(out)
@@ -372,4 +381,4 @@ def run_all(trainval, val_man, test, test_man, ck, out, tracker=None, run=None):
                            "classifier_test_macro_f1": cls_test["macro_f1"]})
         for fn in sorted(os.listdir(fig)):
             tracker.wandb.log({f"figures/{fn[:-4]}": tracker.wandb.Image(os.path.join(fig, fn))})
-    print("evaluation done ->", res)
+    print("evaluation done ->", out)
