@@ -1,0 +1,27 @@
+# Start everything with:  docker compose up --build
+# Then open http://localhost:8080
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: genai-backend
+    volumes:
+      - ./models:/models:ro          # ONNX models (see README: python scripts/download_models.py)
+    environment:
+      - MODEL_DIR=/models
+      - ORT_THREADS=2
+    ports:
+      - "8000:8000"                  # API docs at http://localhost:8000/docs
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: genai-frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
