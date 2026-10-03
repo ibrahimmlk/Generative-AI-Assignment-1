@@ -1,0 +1,274 @@
+\documentclass[conference]{IEEEtran}
+\IEEEoverridecommandlockouts
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,fit,shapes.geometric,calc}
+\usepackage{hyperref}
+\usepackage{url}
+\graphicspath{{figures/}}
+
+\tikzset{
+  blk/.style={draw, rounded corners=2pt, minimum height=6mm, minimum width=9mm, font=\scriptsize, align=center, fill=blue!6},
+  lat/.style={draw, rounded corners=2pt, minimum height=6mm, minimum width=7mm, font=\scriptsize, align=center, fill=orange!20},
+  op/.style={draw, circle, inner sep=1pt, font=\scriptsize},
+  arr/.style={-{Latex[length=1.6mm]}, thick},
+}
+
+\input{results_macros}   % generated numbers (\newcommand definitions)
+
+\begin{document}
+
+\title{From Universal Denoising to Soft Mixture-of-Experts Restoration and Style-Conditioned Face-to-Sketch Synthesis: Design, Optimisation and Deployment of Four Generative Systems}
+
+\author{\IEEEauthorblockN{\AUTHORNAME}
+\IEEEauthorblockA{\AUTHORAFFIL\\
+Generative AI --- Assignment 1\\
+Code: \url{https://github.com/ibrahimmlk/Generative-AI-Assignment-1}\\
+Demo video: \url{\VIDEOURL}}}
+
+\maketitle
+
+\begin{abstract}
+We design, train, evaluate and deploy four related generative systems. Tasks~1--3 restore $128\times128$ Oxford-IIIT Pet images corrupted at run time by salt-and-pepper noise, Gaussian blur or rectangular occlusion: (1) a single universal convolutional denoising autoencoder (DAE) with a genuine latent bottleneck, (2) a hard-routed system in which a CNN corruption classifier selects one of three specialist DAEs, and (3) a differentiable soft mixture-of-experts (MoE) whose gate is initialised from the classifier and trained jointly with the experts under reconstruction, SSIM, cross-entropy and routing-balance losses. Task~4 is a style-conditioned pix2pix GAN that converts FS2K face photographs into sketches in one of three styles using a learned style embedding injected into both generator and discriminator. Every model was tuned with Optuna (TPE sampler, median pruning, routing-collapse pruning for the MoE), tracked with Weights~\&~Biases, exported to ONNX (max.\ deviation from PyTorch $\le\ONNXMAXDIFF$) and served through a React/Tailwind front end and FastAPI back end started by a single Docker Compose command. On the official test set the MoE reaches \MOEPSNRCORR\,dB / \MOESSIMCORR{} SSIM averaged over all corrupted inputs, compared with \TONEPSNRCORR\,dB / \TONESSIMCORR{} for the universal DAE and \PREDPSNRCORR\,dB / \PREDSSIMCORR{} for predicted hard routing.
+\end{abstract}
+
+\begin{IEEEkeywords}
+denoising autoencoder, image restoration, mixture of experts, conditional GAN, pix2pix, Optuna, ONNX
+\end{IEEEkeywords}
+
+%=====================================================================
+\section{Introduction}
+Real images are degraded in many different ways, and a practical restoration system rarely knows which degradation it faces. Three design philosophies exist: a single \emph{universal} model that must internalise every degradation, a \emph{hard-routed} pipeline that first recognises the degradation and then calls a specialist, and a \emph{soft} mixture that blends specialists with input-dependent weights. We implement all three on the same data, the same corruption definitions and the same evaluation protocol, so their behaviour can be compared directly, and complement them with a paired image-to-image GAN for face-to-sketch synthesis. The contributions of this report are: (i) a reproducible runtime corruption pipeline with deterministic validation/test manifests; (ii) a controlled comparison of universal, hard-routed and soft-routed restoration including oracle versus predicted routing and an analysis of routing behaviour; (iii) a style-conditioned pix2pix model; and (iv) a containerised application that exposes all four models through ONNX Runtime.
+
+%=====================================================================
+\section{Related Work}
+\textbf{Denoising autoencoders.} Vincent \emph{et al.}~\cite{vincent2008} showed that reconstructing clean inputs from corrupted ones forces an autoencoder to learn robust features; convolutional variants such as DnCNN~\cite{zhang2017dncnn} and RED-Net~\cite{mao2016red} became strong restoration baselines. RED-Net and U-Net~\cite{ronneberger2015} rely on skip connections; we deliberately avoid them in Tasks 1--3 because unrestricted skips let the network copy the input around the bottleneck, which the assignment rules out and which would also copy impulse noise to the output.
+
+\textbf{Loss functions.} Zhao \emph{et al.}~\cite{zhao2017loss} showed that $\ell_2$ training correlates poorly with perceived quality and that a mix of $\ell_1$ and (MS-)SSIM~\cite{wang2004ssim} gives sharper, more structurally faithful restorations. This motivates our $\alpha\mathcal{L}_{L1}+(1-\alpha)(1-\text{SSIM})$ objective with $\alpha$ tuned by Optuna.
+
+\textbf{All-in-one restoration.} AirNet~\cite{li2022airnet} and PromptIR~\cite{potlapalli2023promptir} restore several unknown degradations with one network by learning degradation representations, which is the universal setting of Task~1; our Task~2/3 systems make the degradation representation explicit through a classifier/gate.
+
+\textbf{Mixture of experts.} Jacobs \emph{et al.}~\cite{jacobs1991} introduced gated expert mixtures; Shazeer \emph{et al.}~\cite{shazeer2017} and the Switch Transformer~\cite{fedus2021switch} showed that without an auxiliary load-balancing term the gate collapses onto a few experts. Our routing-balance regulariser follows this line; temperature-scaled softmax gating~\cite{hinton2015distill} controls sharpness.
+
+\textbf{Conditional GANs.} GANs~\cite{goodfellow2014}, conditional GANs~\cite{mirza2014} and pix2pix~\cite{isola2017} (U-Net generator, PatchGAN discriminator, $\lambda_{L1}=100$) form the basis of Task~4. FS2K~\cite{fan2022fs2k} is a recent facial-sketch benchmark with three sketch styles. Categorical conditioning through learned embeddings follows~\cite{mirza2014,odena2017acgan}.
+
+\textbf{Hyper-parameter optimisation and deployment.} Optuna~\cite{akiba2019optuna} provides define-by-run search with the TPE sampler~\cite{bergstra2011tpe} and median pruning. ONNX~\cite{onnx} and ONNX Runtime decouple training from serving.
+
+%=====================================================================
+\section{Data and Runtime Corruption Pipeline}
+\subsection{Datasets and splits}
+Oxford-IIIT Pet~\cite{parkhi2012pets} provides \NTRAINVAL{} official train+val and \NTEST{} official test images (37 breeds; labels unused). The train+val set was split 80/20 with seed 42 into \NTRAIN{} training and \NVAL{} validation images; the same split is used for Tasks 1--3 and the test set was only touched by the final evaluation script. All images are converted to RGB and resized to $128\times128$ with area interpolation and cached as a compressed array.
+
+\subsection{Corruptions}
+Table~\ref{tab:corr} lists the corruption definitions. During training, \texttt{RuntimeCorruptionDataset.\_\_getitem\_\_} draws a new condition and a new severity every time an image is loaded, from fresh OS entropy (so workers and epochs never repeat). The condition is chosen with equal probability; for the classifier and the MoE a \texttt{BalancedBatchSampler} additionally forces exactly $B/4$ samples of each class per batch. Salt-and-pepper replaces the selected pixels (all three channels) with black or white with probability $\tfrac12$ each. Occlusion masks are placed without overlap, which makes the joint coverage equal to the sum of the rectangle areas, and a placement is accepted only if the coverage is within $\pm1$\,\% of the sampled target, so the 10--35\,\% constraint is satisfied exactly (measured training range: 10.9--34.2\,\%).
+
+\begin{table}[t]
+\centering
+\caption{Corruption configuration}
+\label{tab:corr}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lll}
+\toprule
+Condition & Training (random per load) & Test: low / medium / high \\
+\midrule
+Clean & identity & identity \\
+Salt \& pepper & $p\sim\mathcal{U}(0.02,0.15)$, black/white 50:50 & $p=0.03 / 0.08 / 0.15$ \\
+Gaussian blur & $k\in\{3,5,7\}$, $\sigma\sim\mathcal{U}(0.5,2.5)$ & $(3,0.7) / (5,1.5) / (7,2.5)$ \\
+Occlusion & 1--3 black boxes, 10--35\,\% area & 1/2/3 boxes, 10/20/35\,\% \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\subsection{Deterministic manifests}
+Validation and test corruptions are generated once by \texttt{build\_manifests} and stored as JSON with the condition, severity bucket, parameters (probability, kernel/$\sigma$, rectangle coordinates, coverage) and the per-image seed that regenerates the salt-and-pepper mask. The validation manifest assigns one balanced condition per image with severities drawn from the training ranges; the test manifest contains, for each of the \NTEST{} test images, the clean image plus the three corruptions at the three fixed severities (10 entries per image, \NTESTENTRIES{} in total).
+
+%=====================================================================
+\section{Task 1: Universal Denoising Autoencoder}
+\subsection{Architecture}
+The encoder (Fig.~\ref{fig:ae}) is a stem of two $3\times3$ conv--BN--LeakyReLU layers followed by three stride-2 stages, so the spatial size goes $128\to64\to32\to16$ while channels grow $b\to2b\to4b\to8b$. A $1\times1$ convolution then compresses the $8b$ feature maps into a latent tensor of $16\times16\times c_z$; this is the only path to the decoder (no skip connections). The decoder mirrors the encoder using bilinear upsampling followed by convolution, which avoids the checkerboard artefacts of transposed convolutions~\cite{odena2016deconv}, and ends with a sigmoid. With the selected $c_z=\TONELATCH$ the latent has \TONELATDIM{} values, a \TONECOMPRESS$\times$ reduction relative to the $49{,}152$-dimensional input, so the network is forced to learn a compressed representation rather than an identity map. Spatial dropout before and after the bottleneck regularises the latent.
+
+We considered a fully-connected latent vector but rejected it: in preliminary reasoning and smoke tests it discards the spatial layout and produces blurry reconstructions even of clean images, while a narrow convolutional bottleneck retains locality at a comparable compression ratio. We also considered limited skip connections; we did not use them because even a single high-resolution skip lets impulse noise and occluder edges pass straight to the output, defeating the restoration objective.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[node distance=1.5mm]
+\node[blk] (in) {$\tilde{x}$\\3$\times$128$^2$};
+\node[blk, right=of in] (e0) {stem\\$b$,128$^2$};
+\node[blk, right=of e0] (e1) {$\downarrow$2\\$2b$,64$^2$};
+\node[blk, right=of e1] (e2) {$\downarrow$2\\$4b$,32$^2$};
+\node[blk, right=of e2] (e3) {$\downarrow$2\\$8b$,16$^2$};
+\node[lat, right=of e3] (z) {$z$\\$c_z$,16$^2$};
+\node[blk, below=5mm of z] (d0) {conv\\$8b$,16$^2$};
+\node[blk, left=of d0] (d1) {$\uparrow$2\\$4b$,32$^2$};
+\node[blk, left=of d1] (d2) {$\uparrow$2\\$2b$,64$^2$};
+\node[blk, left=of d2] (d3) {$\uparrow$2\\$b$,128$^2$};
+\node[blk, left=of d3] (out) {$\hat{x}$\\sigmoid};
+\foreach \a/\b in {in/e0,e0/e1,e1/e2,e2/e3,e3/z,z/d0,d0/d1,d1/d2,d2/d3,d3/out} \draw[arr] (\a) -- (\b);
+\node[font=\scriptsize, above=0.5mm of e2] {Encoder $E$};
+\node[font=\scriptsize, below=0.5mm of d2] {Decoder $D$ (no skip connections)};
+\end{tikzpicture}
+\caption{Universal DAE $\hat{x}=D(E(\tilde{x}))$. Each block is two $3\times3$ conv--BN--LeakyReLU layers; $\downarrow$2 = stride-2 conv, $\uparrow$2 = bilinear upsampling. The orange $1\times1$-conv latent is the bottleneck. The same architecture is reused for the three Task-2 specialists.}
+\label{fig:ae}
+\end{figure}
+
+\subsection{Loss and training}
+The model minimises $\mathcal{L}_{UDAE}=\alpha\mathcal{L}_{L1}(x,\hat{x})+(1-\alpha)(1-\text{SSIM}(x,\hat{x}))$ with an $11\times11$ Gaussian-window SSIM ($\sigma=1.5$) implemented in PyTorch and computed in FP32 even under mixed precision. We use AdamW (weight decay $10^{-5}$), cosine learning-rate decay, automatic mixed precision and horizontal-flip augmentation of the clean image before corruption, and keep the weights of the epoch with the best validation objective
+\begin{equation}
+S=\tfrac12\,\text{SSIM}+\tfrac12\,\min(\text{PSNR},40)/40,
+\end{equation}
+which combines reconstruction quality (PSNR) and structure (SSIM) on comparable $[0,1]$ scales.
+
+\subsection{Optuna study}
+Table~\ref{tab:optuna1} gives the search space. The TPE sampler (seed 42) proposed \TONETRIALS{} trials of \TONETRIALEP{} epochs each; a median pruner (3 start-up trials, 1 warm-up epoch) stopped \TONEPRUNED{} unpromising trials. The best trial (\#\TONEBEST, $S=\TONEBESTVAL$) was retrained for \TONEEPOCHS{} epochs. Fig.~\ref{fig:optuna} shows the optimisation histories and parameter importances.
+
+\begin{table}[t]
+\centering
+\caption{Task 1 Optuna search space and selected configuration}
+\label{tab:optuna1}
+\begin{tabular}{lll}
+\toprule
+Hyper-parameter & Range & Selected \\
+\midrule
+Learning rate & $[10^{-4},3\cdot10^{-3}]$ log & \TONELR \\
+Batch size & \{16, 32, 64\} & \TONEBS \\
+Bottleneck channels $c_z$ & \{8, 16, 32\} & \TONELATCH \\
+Base channels $b$ & \{32, 48, 64\} & \TONEBASE \\
+Dropout & $[0, 0.3]$ & \TONEDROP \\
+Loss weight $\alpha$ & $[0.5, 0.95]$ & \TONEALPHA \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Results}
+\input{t1_results}
+
+%=====================================================================
+\section{Task 2: Classification and Hard-Routed Specialists}
+\subsection{Corruption classifier}
+The classifier $C$ stacks 4--5 blocks of two $3\times3$ conv--BN--ReLU layers and $2\times2$ max-pooling. The first block works at full resolution because both blur and isolated impulses are high-frequency cues that early striding would erase. Global \emph{average} and global \emph{max} pooling are concatenated before dropout and a linear layer: max pooling preserves strong local evidence such as a single black rectangle or a few saturated pixels that average pooling would dilute. It is trained with cross-entropy on balanced batches (exactly $B/4$ samples per class), so the classifier cannot exploit a class prior. Optuna tuned the learning rate, batch size \{32,64,128\}, channel configuration \{small, medium, large\}, dropout $[0,0.5]$ and weight decay $[10^{-6},10^{-2}]$ (log), maximising validation macro-F1 (\CLSTRIALS{} trials; best: \CLSBESTPARAMS).
+
+\subsection{Specialists}
+The three specialists reuse the Task-1 architecture with independent parameters; each sees only its own corruption (the \texttt{classes} argument of the runtime dataset) and reconstructs the same clean target. To keep the search affordable, one shared Optuna study selected a common architecture: each trial trains all three specialists briefly and returns the mean of their validation objectives, so the chosen configuration is good for all three rather than for one. The search covered learning rate, bottleneck channels, base channels, batch size and $\alpha$ (\SPTRIALS{} trials; best: \SPBESTPARAMS). The three specialists were then trained independently for \SPEPOCHS{} epochs.
+
+\subsection{Routing}
+At inference $r=\arg\max_k p_k$; $r=\text{clean}$ returns $\tilde{x}$ unchanged (identity bypass), otherwise only the selected specialist is executed (Fig.~\ref{fig:routing}a). We evaluate \emph{oracle routing} (the manifest label selects the expert) and \emph{predicted routing} (the classifier selects it).
+
+\subsection{Results}
+\input{t2_results}
+
+%=====================================================================
+\section{Task 3: Jointly Trained Soft Mixture-of-Experts}
+\subsection{Model}
+The gate $G$ has the classifier architecture and is initialised with the trained Task-2 classifier; the experts are initialised with the three trained specialists (Fig.~\ref{fig:routing}b). For input $\tilde{x}$,
+$w=\text{softmax}(G(\tilde{x})/\tau)$ and $\hat{x}=w_0\tilde{x}+w_1A_{salt}(\tilde{x})+w_2A_{blur}(\tilde{x})+w_3A_{occ}(\tilde{x})$. Because the combination is differentiable, the reconstruction error back-propagates into both the gate and the experts. The whole pipeline, including the softmax, the temperature and the weighted sum, is exported as one ONNX graph with two outputs (image and weights).
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[node distance=2mm]
+\node[blk] (x) {$\tilde{x}$};
+\node[blk, right=4mm of x, fill=green!10] (c) {$C$};
+\node[op, right=4mm of c] (sw) {\tiny argmax};
+\node[blk, right=6mm of sw, yshift=7mm] (a1) {$A_{salt}$};
+\node[blk, right=6mm of sw] (a2) {$A_{blur}$};
+\node[blk, right=6mm of sw, yshift=-7mm] (a3) {$A_{occ}$};
+\node[blk, above=1mm of a1, fill=gray!10] (id) {identity};
+\node[blk, right=6mm of a2] (o) {$\hat{x}$};
+\draw[arr] (x)--(c); \draw[arr] (c)--(sw);
+\draw[arr, dashed] (sw.north) |- (id.west); \draw[arr] (sw)--(a1.west); \draw[arr, dashed] (sw)--(a2.west); \draw[arr, dashed] (sw)--(a3.west);
+\draw[arr] (a1.east)--(o); \draw[arr, dashed] (id.east) -| (o.north); \draw[arr, dashed] (a2)--(o); \draw[arr, dashed] (a3.east)--(o);
+\node[font=\scriptsize, left=1mm of x] {(a)};
+\end{tikzpicture}\\[2mm]
+\begin{tikzpicture}[node distance=2mm]
+\node[blk] (x) {$\tilde{x}$};
+\node[blk, right=4mm of x, fill=green!10, yshift=12mm] (g) {$G$ (init $C$)};
+\node[blk, right=3mm of g] (sm) {softmax$(\cdot/\tau)$};
+\node[blk, right=10mm of x, yshift=3mm] (id) {identity};
+\node[blk, right=10mm of x, yshift=-3.5mm] (a1) {$A_{salt}$};
+\node[blk, right=10mm of x, yshift=-10mm] (a2) {$A_{blur}$};
+\node[blk, right=10mm of x, yshift=-16.5mm] (a3) {$A_{occ}$};
+\node[op, right=22mm of a1] (sum) {$\Sigma$};
+\node[blk, right=4mm of sum] (o) {$\hat{x}$};
+\draw[arr] (x) |- (g); \draw[arr] (g)--(sm);
+\foreach \n/\w in {id/w_0,a1/w_1,a2/w_2,a3/w_3} {\draw[arr] (x.east) -- (\n.west); \draw[arr] (\n.east) -- node[font=\tiny, above, pos=0.4] {$\w$} (sum);}
+\draw[arr, dashed] (sm.south) -- (sum.north);
+\draw[arr] (sum)--(o);
+\node[font=\scriptsize, left=1mm of x] {(b)};
+\end{tikzpicture}
+\caption{(a) Hard routing: only the expert chosen by the classifier runs (dashed = not executed for this input). (b) Soft MoE: all branches run and are blended with gate weights $w$; gate and experts are trained jointly.}
+\label{fig:routing}
+\end{figure}
+
+\subsection{Loss and two-stage training}
+$\mathcal{L}_{MoE}=\lambda_1\mathcal{L}_{L1}+\lambda_s(1-\text{SSIM})+\lambda_c\mathcal{L}_{CE}(G(\tilde{x}),y)+\lambda_b\mathcal{L}_{balance}$, with $\mathcal{L}_{balance}=\sum_{k=0}^{3}(\bar{w}_k-\tfrac14)^2$ computed on balanced batches, where the ideal average weight of each branch is exactly $\tfrac14$. The cross-entropy term keeps the gate semantically tied to the corruption label, while the balance term (cf.\ the auxiliary load-balancing losses of~\cite{shazeer2017,fedus2021switch}) penalises collapse onto one branch. Note that, unlike in sparse MoE language models, here the balance term only acts on the \emph{batch mean}; per-sample weights remain free to be sharp, which is what we want. Training starts with a \MOEWARM-epoch warm-up in which the experts are frozen (parameters \texttt{requires\_grad=False}, BN in eval mode) and only the gate is trained ($\text{lr}=10^{-4}$); afterwards all parameters are fine-tuned jointly with a smaller, Optuna-selected learning rate for \MOEEPOCHS{} epochs.
+
+\subsection{Optuna study}
+The joint learning rate $[10^{-5},3\cdot10^{-4}]$ (log), $\tau\in[0.5,2]$, $\lambda_c\in[0.01,0.5]$ (log), $\lambda_b\in[10^{-3},0.1]$ (log) and the reconstruction weighting $\lambda_1\in[0.5,0.95]$ with $\lambda_s=1-\lambda_1$ were searched (\MOETRIALS{} trials). Besides median pruning we added a domain-specific pruning rule: a trial is stopped as soon as the mean validation weight of any branch falls below 0.02, i.e.\ when routing collapses (\MOECOLLAPSED{} trials were pruned this way). Selected: \MOEBESTPARAMS.
+
+\subsection{Results}
+\input{t3_results}
+
+%=====================================================================
+\section{Task 4: Style-Conditioned Face-to-Sketch GAN}
+\subsection{Data}
+We use the official FS2K split~\cite{fan2022fs2k} (\FSTRAINFULL{} training, \FSTEST{} test pairs). Fifteen percent of the training pairs, stratified by style with seed 42, form the validation set (\FSTRAIN/\FSVAL; validation styles \FSVALSTYLES). Photographs and sketches are resized to $128\times128$; the sketch of \texttt{photo1/image0110} is \texttt{sketch1/sketch0110}, and we verified the pairing visually. Augmentation uses the pix2pix jitter (resize to 142, random $128$ crop) and horizontal flips, applied with \emph{identical} parameters to both images of a pair to preserve pixel correspondence.
+
+\subsection{Architecture}
+The generator is a 7-level U-Net~\cite{ronneberger2015,isola2017} ($128\to1$, channels $b$ to $8b$, dropout in the three innermost decoder blocks). The style $s\in\{0,1,2\}$ is mapped by a learned \texttt{nn.Embedding} to $e_s\in\mathbb{R}^{d}$, which is broadcast spatially and concatenated (i) to the input photograph and (ii) to the $2\times2$ bottleneck features, so it controls both low-level stroke texture and global appearance. The discriminator is a PatchGAN~\cite{isola2017} that receives the photograph, a real or generated sketch and its own style embedding map, and outputs a $14\times14$ grid of real/fake logits, each judging a $70\times70$-pixel receptive field. Skip connections are appropriate here (unlike Tasks 1--3) because the sketch must align pixel-wise with the photograph.
+
+\subsection{Objective and training}
+With BCE-with-logits, $\mathcal{L}_D=\tfrac12[\text{BCE}(D(x,y,s),1)+\text{BCE}(D(x,G(x,s),s),0)]$ and $\mathcal{L}_G=\text{BCE}(D(x,G(x,s),s),1)+\lambda_{L1}\lVert y-G(x,s)\rVert_1$. Adam ($\beta_1=0.5$) with a constant learning rate for the first half of training and linear decay to zero afterwards follows pix2pix. Discriminator real loss, discriminator fake loss, generator adversarial loss, generator L1 loss and validation PSNR/SSIM/L1 are logged separately every epoch, and a fixed grid of six validation photographs (two per style) rendered in all three styles is logged every 10 epochs.
+
+\subsection{Optuna study}
+Generator and discriminator learning rates, batch size \{4,8,16\}, base channels \{32,48,64\}, dropout $[0,0.5]$, embedding dimension \{4,8,16\} and $\lambda_{L1}\in[10,200]$ (log) were searched with \FSTRIALS{} trials of \FSTRIALEP{} epochs; the best configuration (\FSBESTPARAMS) was retrained for \FSEPOCHS{} epochs. The validation objective is the same $S$ as in Task~1.
+
+\subsection{Results}
+\input{t4_results}
+
+%=====================================================================
+\section{Application and Deployment}
+\input{app_section}
+
+%=====================================================================
+\section{Limitations}
+\input{limitations}
+
+\section{Conclusion}
+\input{conclusion}
+
+%=====================================================================
+\begin{thebibliography}{99}
+\bibitem{vincent2008} P.~Vincent, H.~Larochelle, Y.~Bengio and P.-A.~Manzagol, ``Extracting and composing robust features with denoising autoencoders,'' in \emph{Proc. ICML}, 2008, pp.~1096--1103.
+\bibitem{zhang2017dncnn} K.~Zhang, W.~Zuo, Y.~Chen, D.~Meng and L.~Zhang, ``Beyond a Gaussian denoiser: Residual learning of deep CNN for image denoising,'' \emph{IEEE Trans. Image Process.}, vol.~26, no.~7, pp.~3142--3155, 2017.
+\bibitem{mao2016red} X.-J.~Mao, C.~Shen and Y.-B.~Yang, ``Image restoration using very deep convolutional encoder-decoder networks with symmetric skip connections,'' in \emph{Proc. NeurIPS}, 2016.
+\bibitem{ronneberger2015} O.~Ronneberger, P.~Fischer and T.~Brox, ``U-Net: Convolutional networks for biomedical image segmentation,'' in \emph{Proc. MICCAI}, 2015, pp.~234--241.
+\bibitem{zhao2017loss} H.~Zhao, O.~Gallo, I.~Frosio and J.~Kautz, ``Loss functions for image restoration with neural networks,'' \emph{IEEE Trans. Comput. Imaging}, vol.~3, no.~1, pp.~47--57, 2017.
+\bibitem{wang2004ssim} Z.~Wang, A.~C.~Bovik, H.~R.~Sheikh and E.~P.~Simoncelli, ``Image quality assessment: From error visibility to structural similarity,'' \emph{IEEE Trans. Image Process.}, vol.~13, no.~4, pp.~600--612, 2004.
+\bibitem{li2022airnet} B.~Li, X.~Liu, P.~Hu, Z.~Wu, J.~Lv and X.~Peng, ``All-in-one image restoration for unknown corruption,'' in \emph{Proc. CVPR}, 2022, pp.~17452--17462.
+\bibitem{potlapalli2023promptir} V.~Potlapalli, S.~W.~Zamir, S.~Khan and F.~S.~Khan, ``PromptIR: Prompting for all-in-one blind image restoration,'' in \emph{Proc. NeurIPS}, 2023.
+\bibitem{jacobs1991} R.~A.~Jacobs, M.~I.~Jordan, S.~J.~Nowlan and G.~E.~Hinton, ``Adaptive mixtures of local experts,'' \emph{Neural Comput.}, vol.~3, no.~1, pp.~79--87, 1991.
+\bibitem{shazeer2017} N.~Shazeer \emph{et al.}, ``Outrageously large neural networks: The sparsely-gated mixture-of-experts layer,'' in \emph{Proc. ICLR}, 2017.
+\bibitem{fedus2021switch} W.~Fedus, B.~Zoph and N.~Shazeer, ``Switch Transformers: Scaling to trillion parameter models with simple and efficient sparsity,'' \emph{J. Mach. Learn. Res.}, vol.~23, no.~120, pp.~1--39, 2022.
+\bibitem{hinton2015distill} G.~Hinton, O.~Vinyals and J.~Dean, ``Distilling the knowledge in a neural network,'' \emph{arXiv:1503.02531}, 2015.
+\bibitem{goodfellow2014} I.~Goodfellow \emph{et al.}, ``Generative adversarial nets,'' in \emph{Proc. NeurIPS}, 2014.
+\bibitem{mirza2014} M.~Mirza and S.~Osindero, ``Conditional generative adversarial nets,'' \emph{arXiv:1411.1784}, 2014.
+\bibitem{isola2017} P.~Isola, J.-Y.~Zhu, T.~Zhou and A.~A.~Efros, ``Image-to-image translation with conditional adversarial networks,'' in \emph{Proc. CVPR}, 2017, pp.~1125--1134.
+\bibitem{odena2017acgan} A.~Odena, C.~Olah and J.~Shlens, ``Conditional image synthesis with auxiliary classifier GANs,'' in \emph{Proc. ICML}, 2017.
+\bibitem{fan2022fs2k} D.-P.~Fan \emph{et al.}, ``Facial-sketch synthesis: A new challenge,'' \emph{Mach. Intell. Res.}, vol.~19, pp.~257--287, 2022.
+\bibitem{parkhi2012pets} O.~M.~Parkhi, A.~Vedaldi, A.~Zisserman and C.~V.~Jawahar, ``Cats and dogs,'' in \emph{Proc. CVPR}, 2012.
+\bibitem{akiba2019optuna} T.~Akiba, S.~Sano, T.~Yanase, T.~Ohta and M.~Koyama, ``Optuna: A next-generation hyperparameter optimization framework,'' in \emph{Proc. KDD}, 2019.
+\bibitem{bergstra2011tpe} J.~Bergstra, R.~Bardenet, Y.~Bengio and B.~K\'egl, ``Algorithms for hyper-parameter optimization,'' in \emph{Proc. NeurIPS}, 2011.
+\bibitem{odena2016deconv} A.~Odena, V.~Dumoulin and C.~Olah, ``Deconvolution and checkerboard artifacts,'' \emph{Distill}, 2016.
+\bibitem{onnx} ONNX Community, ``Open Neural Network Exchange,'' \url{https://onnx.ai}, accessed 2026.
+\end{thebibliography}
+
+\appendices
+\section{Use of AI Tools}
+\input{ai_appendix}
+
+\end{document}

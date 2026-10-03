@@ -1,0 +1,54 @@
+\subsection{Design process}
+The interface was designed first in Google Stitch (prompted with the four workspaces, the controls each needs and the information each must display). Stitch produced a dark Material-3 style dashboard with a fixed sidebar, a status footer, a top telemetry bar, a control card on the left and image panels plus stat tiles on the right (Fig.~\ref{fig:stitch}). The exported HTML is kept in \texttt{design/stitch/}. We implemented the design in React~18 + Tailwind~CSS~4 by transferring the Stitch colour tokens (surface, primary, tertiary, \ldots), typography (Geist, Inter, JetBrains Mono), Material Symbols icons, the gradient call-to-action and the card/panel structure into Tailwind theme variables and reusable components (\texttt{Card}, \texttt{ImagePanel}, \texttt{Stat}, \texttt{Bars}). Elements that Stitch invented but that would misrepresent the system (``A100 GPU'', ``diffusion'', fake VRAM and checkpoint names) were replaced by real information from the back end (ONNX Runtime version, execution provider, number of loaded models, latency, uptime).
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.49\columnwidth]{stitch_universal-restoration.png}\hfill
+\includegraphics[width=0.49\columnwidth]{stitch_soft-mixture-of-experts.png}\\[1mm]
+\includegraphics[width=0.49\columnwidth]{stitch_hard-routed-restoration.png}\hfill
+\includegraphics[width=0.49\columnwidth]{stitch_face-to-sketch-generator.png}
+\caption{Original Google Stitch designs (rendered from the exported HTML) for the four workspaces.}
+\label{fig:stitch}
+\end{figure}
+
+\subsection{Architecture}
+Fig.~\ref{fig:apparch} shows the deployment. \texttt{docker compose up --build} builds two images: a multi-stage Node~22 $\rightarrow$ nginx image that serves the compiled React bundle and reverse-proxies \texttt{/api} to the back end, and a Python~3.11 image running FastAPI with ONNX Runtime (CPU execution provider). The ONNX files are mounted read-only from \texttt{./models}, which \texttt{scripts/download\_models.py} fills from the GitHub release, so no Python script has to be run by hand inside the containers. A Docker health check on \texttt{/api/health} gates the start of the front end.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[node distance=3mm, font=\scriptsize]
+\node[blk, minimum width=14mm] (br) {Browser\\React + Tailwind};
+\node[blk, right=5mm of br, minimum width=16mm] (ng) {nginx :8080\\static + /api proxy};
+\node[blk, right=5mm of ng, minimum width=18mm] (fa) {FastAPI :8000\\validate, corrupt,\\pre/post-process};
+\node[blk, below=4mm of fa, minimum width=18mm, fill=orange!15] (ort) {ONNX Runtime\\7 sessions};
+\node[blk, left=5mm of ort, minimum width=16mm, fill=gray!10] (vol) {./models (ro)\\*.onnx};
+\draw[arr] (br)--(ng); \draw[arr] (ng)--(fa); \draw[arr] (fa)--(ort); \draw[arr] (vol)--(ort);
+\node[draw, dashed, rounded corners, fit=(ng)(fa)(ort)(vol), inner sep=2mm, label={[font=\scriptsize]above:Docker Compose}] {};
+\end{tikzpicture}
+\caption{Application architecture.}
+\label{fig:apparch}
+\end{figure}
+
+\subsection{Back end}
+The FastAPI service exposes \texttt{GET /api/health}, \texttt{GET /api/system}, \texttt{GET /api/samples}, \texttt{POST /api/restore/universal}, \texttt{/api/restore/hard}, \texttt{/api/restore/moe} and \texttt{/api/sketch}. Uploads are validated (MIME type, 10\,MB limit, decodability, EXIF orientation); sample paths are resolved and checked against the sample directory to prevent path traversal. A user can upload an already corrupted image (\texttt{corruption=none}) or apply any corruption at one of the three test severities with a chosen seed, using the \emph{same} \texttt{genai/corruptions.py} module as training, so the app reproduces the test conditions exactly. When a clean reference exists, the response also contains PSNR/SSIM before and after restoration and an absolute-error map. The hard-routing endpoint runs the classifier, then either the identity bypass or exactly one specialist session, and returns the four probabilities, the predicted class, the chosen expert and separate classifier/expert latencies. The MoE endpoint returns the four routing weights, their ranking and the routing entropy. Face photographs are centre-cropped to a square before resizing so that webcam frames are not distorted.
+
+\subsection{ONNX export and verification}
+All seven inference graphs (universal DAE, classifier with softmax, three specialists, the complete soft MoE and the sketch generator with its $[-1,1]\leftrightarrow[0,1]$ conversion folded in) were exported with opset 17 and a dynamic batch axis. Each exported model was run with ONNX Runtime on real test images plus random inputs and compared with PyTorch; Table~\ref{tab:onnx} lists the maximum absolute deviation, which is at floating-point round-off level for every model. The results are stored in \texttt{onnx\_verification.json} and shown on the application's System page.
+
+\input{onnx_table}
+
+\subsection{Interface}
+Fig.~\ref{fig:app} shows the implemented workspaces. Every workspace shows the input, the output, a download button for every image, the inference time measured around the ONNX Runtime call, and the round-trip time measured in the browser. The Hard-Routed workspace adds the classifier probability bars, the predicted corruption, the selected expert and whether the routing was correct (when the true corruption is known). The Soft MoE workspace adds the four weight bars, a stacked contribution bar, the dominant branch and the routing entropy. The Face-to-Sketch workspace supports upload, sample selection and webcam capture, three style cards and a side-by-side view with download.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.49\textwidth]{app_universal.png}\hfill
+\includegraphics[width=0.49\textwidth]{app_hard.png}\\[1mm]
+\includegraphics[width=0.49\textwidth]{app_moe.png}\hfill
+\includegraphics[width=0.49\textwidth]{app_sketch.png}
+\caption{The deployed application (running in Docker) on unseen test images: Universal Restoration, Hard-Routed Restoration, Soft Mixture-of-Experts Restoration and Face-to-Sketch Generator.}
+\label{fig:app}
+\end{figure*}
+
+\subsection{Experiment tracking}
+All Optuna trials (one W\&B run each, grouped per study), the final training runs with their per-epoch losses and validation metrics, logged sample images, model checkpoints (as W\&B artifacts) and the test-set evaluation tables and figures are recorded in the W\&B project \url{\WANDBURL}. The Optuna studies themselves are stored as SQLite databases and JSON summaries in \texttt{results/optuna/}.

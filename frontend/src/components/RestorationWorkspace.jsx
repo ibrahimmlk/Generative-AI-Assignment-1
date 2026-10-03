@@ -214,7 +214,7 @@ export default function RestorationWorkspace({ mode, title, eyebrow, description
         </div>
 
         <div className="flex flex-col gap-6 lg:col-span-8">
-          {mode === "hard" && routingCards}
+          {routingCards}
           <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${result?.error_map ? "xl:grid-cols-4" : "md:grid-cols-3"}`}>
             {(result?.original || !result) && <ImagePanel label="Clean / Original" src={result?.original} filename="original.png" tag="Reference" footer="ground truth" />}
             <ImagePanel label="Corrupted Input" src={result?.input} filename="input.png" tag={corrTag} tagTone="error" caption={result && describe(result.corruption)} footer="model input" />
@@ -227,7 +227,6 @@ export default function RestorationWorkspace({ mode, title, eyebrow, description
             <Stat label="Structural sim." icon="layers" iconColor="text-primary-container" accent="text-primary" value={m ? m.ssim_output : null} hint={m && gain(m.ssim_input, m.ssim_output, 3)} />
             <Stat label="Active pipeline" icon="schema" iconColor="text-outline" value={result ? pretty(result.corruption.type?.split(" ")[0]) : null} hint={result ? describe(result.corruption) : null} />
           </div>
-          {mode === "moe" && routingCards}
         </div>
       </div>
     </div>

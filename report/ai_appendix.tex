@@ -1,0 +1,15 @@
+\textbf{Tool.} Claude Code (Anthropic, Claude Opus model) was used as a coding assistant inside VS Code. Google Stitch was used for the interface design, as required by the assignment.
+
+\textbf{Tasks it was used for.} (i) Reading the assignment and planning the work under a tight schedule; (ii) writing the first version of the training package (data pipeline, corruption functions, models, training loops, Optuna objectives, evaluation and ONNX export), the FastAPI back end, the React front end, the Dockerfiles and the Compose file; (iii) translating the Stitch export into React/Tailwind components; (iv) drafting the structure and the methodological text of this report, including the TikZ diagrams; (v) looking up dataset details (FS2K folder structure, annotation format and official split script).
+
+\textbf{How the outputs were tested and corrected.}
+\begin{itemize}
+\item \emph{End-to-end smoke test:} before using GPU time, the complete pipeline (Optuna, training, evaluation, figures, ONNX export) was run on CPU with synthetic data and a ``smoke'' budget. This exposed a crash when the batch size exceeded the number of samples (empty epochs and a division by zero), which was fixed in the batch sampler and data loader.
+\item \emph{Corruption checks:} corrupted test images were inspected visually for all three severities (Section~III), and the occlusion coverage was measured over 50 placements per severity (10.0\,\%, 20.0\,\%, 35.0\,\% $\pm0.1$\,\%) and over 2,000 training samples (10.9--34.2\,\%).
+\item \emph{Data pairing:} FS2K photograph/sketch pairs were plotted side by side to confirm that the loader pairs files correctly; the stratified split was verified by printing the style counts.
+\item \emph{ONNX:} every exported model is compared numerically with PyTorch (Table~\ref{tab:onnx}).
+\item \emph{API:} every endpoint was called with valid inputs, with a non-image file (rejected with HTTP 415) and with a path-traversal sample name (rejected with HTTP 404).
+\item \emph{Interface:} headless-browser screenshots were compared with the Stitch renderings; invented hardware details from the Stitch mock-up were replaced by real values from the back end.
+\item \emph{Numbers in the report} are not typed by hand: \texttt{scripts/make\_report\_assets.py} generates them from the result files written by the evaluation scripts.
+\end{itemize}
+All hyper-parameter values reported here were selected by Optuna, not by the assistant. I reviewed the generated code and can explain and modify every component.
