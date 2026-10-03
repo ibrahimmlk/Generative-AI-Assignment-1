@@ -1,0 +1,79 @@
+\begin{table}[t]
+\centering
+\caption{Test PSNR (dB) by input condition}
+\label{tab:psnr_type}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+Condition & Input & T1 & T2-Oracle & T2-Pred & T3-MoE \\
+\midrule
+clean & $\infty$ & 12.13 & $\infty$ & 12.11 & 14.65 \\
+salt-pepper & 16.55 & 12.13 & 12.11 & 12.11 & \textbf{14.21} \\
+blur & 47.29 & 12.13 & 12.11 & 12.11 & \textbf{14.61} \\
+occlusion & 12.32 & 12.13 & 12.11 & 12.11 & \textbf{13.62} \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Test SSIM by input condition}
+\label{tab:ssim_type}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+Condition & Input & T1 & T2-Oracle & T2-Pred & T3-MoE \\
+\midrule
+clean & \textbf{1.000} & 0.323 & \textbf{1.000} & 0.320 & 0.602 \\
+salt-pepper & 0.325 & 0.323 & 0.320 & 0.320 & \textbf{0.403} \\
+blur & 0.997 & 0.323 & 0.320 & 0.320 & \textbf{0.596} \\
+occlusion & 0.697 & 0.323 & 0.320 & 0.320 & \textbf{0.503} \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Test PSNR (dB) by corruption and severity}
+\label{tab:psnr_sev}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+Condition & Input & T1 & T2-Oracle & T2-Pred & T3-MoE \\
+\midrule
+blur / high & 40.29 & 12.13 & 12.11 & 12.11 & \textbf{14.57} \\
+blur / low & 55.15 & 12.13 & 12.11 & 12.11 & \textbf{14.64} \\
+blur / medium & 46.43 & 12.13 & 12.11 & 12.11 & \textbf{14.61} \\
+clean / none & $\infty$ & 12.13 & $\infty$ & 12.11 & 14.65 \\
+occlusion / high & 9.66 & 12.12 & 12.11 & 12.11 & \textbf{13.06} \\
+occlusion / low & 15.35 & 12.13 & 12.11 & 12.11 & \textbf{14.17} \\
+occlusion / medium & 11.95 & 12.13 & 12.11 & 12.11 & \textbf{13.61} \\
+salt-pepper / high & 13.29 & 12.13 & 12.11 & 12.11 & \textbf{13.90} \\
+salt-pepper / low & 20.28 & 12.13 & 12.11 & 12.11 & \textbf{14.49} \\
+salt-pepper / medium & 16.06 & 12.13 & 12.11 & 12.11 & \textbf{14.24} \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\begin{table}[t]
+\centering
+\caption{Test SSIM by corruption and severity}
+\label{tab:ssim_sev}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccccc}
+\toprule
+Condition & Input & T1 & T2-Oracle & T2-Pred & T3-MoE \\
+\midrule
+blur / high & 0.994 & 0.323 & 0.320 & 0.320 & \textbf{0.590} \\
+blur / low & 0.999 & 0.323 & 0.320 & 0.320 & \textbf{0.601} \\
+blur / medium & 0.998 & 0.323 & 0.320 & 0.320 & \textbf{0.596} \\
+clean / none & \textbf{1.000} & 0.323 & \textbf{1.000} & 0.320 & 0.602 \\
+occlusion / high & 0.521 & 0.322 & 0.320 & 0.320 & \textbf{0.446} \\
+occlusion / low & 0.853 & 0.323 & 0.320 & 0.320 & \textbf{0.555} \\
+occlusion / medium & 0.716 & 0.323 & 0.320 & 0.320 & \textbf{0.507} \\
+salt-pepper / high & 0.139 & \textbf{0.323} & 0.320 & 0.320 & 0.301 \\
+salt-pepper / low & 0.562 & 0.323 & 0.320 & 0.320 & \textbf{0.508} \\
+salt-pepper / medium & 0.274 & 0.323 & 0.320 & 0.320 & \textbf{0.399} \\
+\bottomrule
+\end{tabular}}
+\end{table}

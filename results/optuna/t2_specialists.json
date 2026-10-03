@@ -1,0 +1,52 @@
+{
+  "study": "t2_specialists",
+  "n_trials": 2,
+  "completed": 2,
+  "pruned": 0,
+  "failed": 0,
+  "best_trial": 0,
+  "best_value": 0.3024320820967356,
+  "best_params": {
+    "lr": 0.0003574712922600243,
+    "batch_size": 16,
+    "latent_ch": 8,
+    "base": 32,
+    "alpha": 0.5092630224331111
+  },
+  "trials": [
+    {
+      "number": 0,
+      "state": "COMPLETE",
+      "value": 0.3024320820967356,
+      "params": {
+        "lr": 0.0003574712922600243,
+        "batch_size": 16,
+        "latent_ch": 8,
+        "base": 32,
+        "alpha": 0.5092630224331111
+      },
+      "user_attrs": {
+        "score_blur": 0.29950317144393923,
+        "score_occlusion": 0.3062214493751526,
+        "score_salt_pepper": 0.3015716254711151
+      }
+    },
+    {
+      "number": 1,
+      "state": "COMPLETE",
+      "value": 0.15018161634604138,
+      "params": {
+        "lr": 0.002708160864249967,
+        "batch_size": 16,
+        "latent_ch": 32,
+        "base": 64,
+        "alpha": 0.5627722372934189
+      },
+      "user_attrs": {
+        "score_blur": 0.1587373673915863,
+        "score_occlusion": 0.1424557536840439,
+        "score_salt_pepper": 0.1493517279624939
+      }
+    }
+  ]
+}

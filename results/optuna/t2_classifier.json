@@ -1,0 +1,44 @@
+{
+  "study": "t2_classifier",
+  "n_trials": 2,
+  "completed": 2,
+  "pruned": 0,
+  "failed": 0,
+  "best_trial": 1,
+  "best_value": 0.1111111111111111,
+  "best_params": {
+    "lr": 0.0011114989443094978,
+    "batch_size": 64,
+    "channels": "small",
+    "dropout": 0.15212112147976886,
+    "weight_decay": 0.0001256104370001356
+  },
+  "trials": [
+    {
+      "number": 0,
+      "state": "COMPLETE",
+      "value": 0.08823529411764706,
+      "params": {
+        "lr": 0.0003574712922600243,
+        "batch_size": 32,
+        "channels": "small",
+        "dropout": 0.4330880728874676,
+        "weight_decay": 0.00025378155082656634
+      },
+      "user_attrs": {}
+    },
+    {
+      "number": 1,
+      "state": "COMPLETE",
+      "value": 0.1111111111111111,
+      "params": {
+        "lr": 0.0011114989443094978,
+        "batch_size": 64,
+        "channels": "small",
+        "dropout": 0.15212112147976886,
+        "weight_decay": 0.0001256104370001356
+      },
+      "user_attrs": {}
+    }
+  ]
+}

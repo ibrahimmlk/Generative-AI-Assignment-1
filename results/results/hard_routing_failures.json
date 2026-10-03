@@ -1,0 +1,16 @@
+{
+  "n_misrouted": 84,
+  "misroute_rate": 0.7,
+  "misroutes_by_pair": {
+    "blur->salt_pepper": 36,
+    "clean->salt_pepper": 12,
+    "occlusion->salt_pepper": 36
+  },
+  "misroutes_by_severity": {
+    "high": 24,
+    "low": 24,
+    "medium": 24,
+    "none": 12
+  },
+  "mean_psnr_drop_when_misrouted": 6.845864295959473
+}

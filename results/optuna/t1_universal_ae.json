@@ -1,0 +1,51 @@
+{
+  "study": "t1_universal_ae",
+  "n_trials": 2,
+  "completed": 2,
+  "pruned": 0,
+  "failed": 0,
+  "best_trial": 1,
+  "best_value": 0.3102040022611618,
+  "best_params": {
+    "lr": 0.0016967533607196547,
+    "batch_size": 16,
+    "latent_ch": 16,
+    "base": 48,
+    "dropout": 0.08764339456056544,
+    "alpha": 0.6648628294821612
+  },
+  "trials": [
+    {
+      "number": 0,
+      "state": "COMPLETE",
+      "value": 0.30754528343677523,
+      "params": {
+        "lr": 0.0003574712922600243,
+        "batch_size": 16,
+        "latent_ch": 8,
+        "base": 32,
+        "dropout": 0.006175348288740734,
+        "alpha": 0.9364594334728974
+      },
+      "user_attrs": {
+        "latent_dim": 2048
+      }
+    },
+    {
+      "number": 1,
+      "state": "COMPLETE",
+      "value": 0.3102040022611618,
+      "params": {
+        "lr": 0.0016967533607196547,
+        "batch_size": 16,
+        "latent_ch": 16,
+        "base": 48,
+        "dropout": 0.08764339456056544,
+        "alpha": 0.6648628294821612
+      },
+      "user_attrs": {
+        "latent_dim": 4096
+      }
+    }
+  ]
+}

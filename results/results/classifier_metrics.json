@@ -1,0 +1,124 @@
+{
+  "val": {
+    "accuracy": 0.2857142857142857,
+    "macro_precision": 0.07142857142857142,
+    "macro_recall": 0.25,
+    "macro_f1": 0.1111111111111111,
+    "per_class": {
+      "clean": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 4
+      },
+      "salt_pepper": {
+        "precision": 0.2857142857142857,
+        "recall": 1.0,
+        "f1": 0.4444444444444444,
+        "support": 4
+      },
+      "blur": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 3
+      },
+      "occlusion": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 3
+      }
+    },
+    "confusion_matrix_normalized": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "test": {
+    "accuracy": 0.3,
+    "macro_precision": 0.075,
+    "macro_recall": 0.25,
+    "macro_f1": 0.11538461538461539,
+    "per_class": {
+      "clean": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 12
+      },
+      "salt_pepper": {
+        "precision": 0.3,
+        "recall": 1.0,
+        "f1": 0.46153846153846156,
+        "support": 36
+      },
+      "blur": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 36
+      },
+      "occlusion": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 36
+      }
+    },
+    "confusion_matrix_normalized": [
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ],
+      [
+        0.0,
+        1.0,
+        0.0,
+        0.0
+      ]
+    ]
+  },
+  "test_accuracy_by_severity": {
+    "none": 0.0,
+    "low": 0.3333333333333333,
+    "medium": 0.3333333333333333,
+    "high": 0.3333333333333333
+  }
+}

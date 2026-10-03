@@ -1,0 +1,6 @@
+{
+  "train": 56,
+  "val": 14,
+  "test": 15,
+  "test_entries": 120
+}

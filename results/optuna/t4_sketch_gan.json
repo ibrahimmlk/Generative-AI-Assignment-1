@@ -1,0 +1,50 @@
+{
+  "study": "t4_sketch_gan",
+  "n_trials": 2,
+  "completed": 2,
+  "pruned": 0,
+  "failed": 0,
+  "best_trial": 1,
+  "best_value": 0.27243324667215346,
+  "best_params": {
+    "lr_g": 8.152843673110742e-05,
+    "lr_d": 3.5909585479487027e-05,
+    "batch_size": 16,
+    "base": 64,
+    "dropout": 0.06974693032602092,
+    "emb_dim": 16,
+    "lambda_l1": 105.0842133869176
+  },
+  "trials": [
+    {
+      "number": 0,
+      "state": "COMPLETE",
+      "value": 0.26992599964141845,
+      "params": {
+        "lr_g": 0.00011844319751820385,
+        "lr_d": 0.00042664981476167217,
+        "batch_size": 4,
+        "base": 64,
+        "dropout": 0.3005575058716044,
+        "emb_dim": 16,
+        "lambda_l1": 121.06896936002164
+      },
+      "user_attrs": {}
+    },
+    {
+      "number": 1,
+      "state": "COMPLETE",
+      "value": 0.27243324667215346,
+      "params": {
+        "lr_g": 8.152843673110742e-05,
+        "lr_d": 3.5909585479487027e-05,
+        "batch_size": 16,
+        "base": 64,
+        "dropout": 0.06974693032602092,
+        "emb_dim": 16,
+        "lambda_l1": 105.0842133869176
+      },
+      "user_attrs": {}
+    }
+  ]
+}
