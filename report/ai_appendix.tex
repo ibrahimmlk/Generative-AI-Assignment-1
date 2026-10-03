@@ -10,6 +10,8 @@
 \item \emph{ONNX:} every exported model is compared numerically with PyTorch (Table~\ref{tab:onnx}).
 \item \emph{API:} every endpoint was called with valid inputs, with a non-image file (rejected with HTTP 415) and with a path-traversal sample name (rejected with HTTP 404).
 \item \emph{Interface:} headless-browser screenshots were compared with the Stitch renderings; invented hardware details from the Stitch mock-up were replaced by real values from the back end.
+\item \emph{Inspection of training histories:} reading the per-epoch MoE history (not only the final metrics) revealed that the AI-written validation objective let near-infinite identity PSNR dominate model selection; the objective was corrected and the MoE stage re-run (Section~VI).
+\item \emph{Fact-checking the text:} every quantitative statement drafted with AI assistance was checked against the result files; three draft statements (the cause of pruned GAN trials, the compute saved by pruning, and when the identity blending in the MoE emerges) were wrong and were corrected.
 \item \emph{Numbers in the report} are not typed by hand: \texttt{scripts/make\_report\_assets.py} generates them from the result files written by the evaluation scripts.
 \end{itemize}
 All hyper-parameter values reported here were selected by Optuna, not by the assistant. I reviewed the generated code and can explain and modify every component.

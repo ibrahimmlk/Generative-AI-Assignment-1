@@ -43,7 +43,23 @@ Restoration endpoints take multipart form fields `file` (or `sample`), `corrupti
 (`none|salt_pepper|blur|occlusion`), `severity` (`low|medium|high`) and optional `seed`.
 Use `corruption=none` for an image that is already corrupted.
 
-## 2. Repository layout
+## 2. Results (official test sets)
+
+| System | Corrupted inputs PSNR / SSIM | Clean inputs PSNR / SSIM |
+|---|---|---|
+| No restoration | 19.27 dB / 0.633 | — |
+| Task 1 universal DAE | 25.99 dB / 0.817 | 28.40 dB / 0.875 |
+| Task 2 hard routing (oracle) | 26.11 dB / 0.808 | identity |
+| Task 2 hard routing (predicted) | 26.12 dB / 0.808 | 99.6 dB / 0.999 |
+| **Task 3 soft MoE** | **26.46 dB / 0.838** | 58.5 dB / 0.999 |
+
+* Corruption classifier: 99.87 % test accuracy, macro-F1 0.998.
+* Face-to-sketch GAN (FS2K test, 1,046 pairs): SSIM 0.480, PSNR 15.4 dB (style 1: 0.522, style 2: 0.393, style 3: 0.625).
+* All ONNX models match PyTorch within 2e-6 (`models/onnx_verification.json`).
+
+Full tables, figures, Optuna studies and per-sample results are in `results/`; the report is in `report/`.
+
+## 3. Repository layout
 
 ```
 genai/                      training package
@@ -67,7 +83,7 @@ report/                     IEEE LaTeX report
 docker-compose.yml
 ```
 
-## 3. Reproduce training
+## 4. Reproduce training
 
 ```bash
 pip install -r requirements-train.txt
@@ -87,7 +103,7 @@ python scripts/run_restoration.py --budget smoke --data data --out out_smoke   #
 * Recommended: open `kaggle/train_all.ipynb` on Kaggle (GPU T4 ×2, Internet on, `WANDB_API_KEY` secret) and
   *Save & Run All*. Total time ≈ 2–3 h.
 
-## 4. Experiment tracking
+## 5. Experiment tracking
 
 All Optuna trials, final runs, losses, validation metrics, sample images, checkpoints (artifacts) and test results are
 logged to Weights & Biases: https://wandb.ai/m-ibrahim-malik-national-university-of-computer-and-eme/genai-a1
