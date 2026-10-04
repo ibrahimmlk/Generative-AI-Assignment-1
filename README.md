@@ -23,6 +23,8 @@ docker compose up --build              # one command starts backend + frontend
 
 Open **http://localhost:8080**. API documentation is at http://localhost:8000/docs.
 
+Demo video: https://youtu.be/uYxdYkkurZU
+
 If Python is not available, download every file from the
 [v1.0 release](https://github.com/ibrahimmlk/Generative-AI-Assignment-1/releases/tag/v1.0) into the `models/` folder.
 Stop with `docker compose down`.
